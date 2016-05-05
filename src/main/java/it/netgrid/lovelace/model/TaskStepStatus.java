@@ -3,20 +3,57 @@ package it.netgrid.lovelace.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement
 public class TaskStepStatus {
 	
+	public static final String ID_FIELD_NAME = "tss_id";
+	public static final String LAST_RUN_FIELD_NAME = "tss_last_run";
+	public static final String LAST_SUCCESS_RUN_FIELD_NAME = "tss_last_success_run";
+	public static final String LAST_RUNNING_TIME_FIELD_NAME = "tss_last_running_time";
+	public static final String CURRENT_ELAPSED_TIME_FIELD_NAME = "tss_current_elapsed_time";
+	public static final String LAST_RESULT_FIELD_NAME = "tss_last_result";
+	public static final String STATUS_FIELD_NAME = "tss_status";
+	public static final String TASK_STATUS_ID_FIELD_NAME = "tss_tst_id";
+	
+	@Id
+	@GeneratedValue
+	@Column(name=ID_FIELD_NAME)
+	private Long id;
+	
+	@Column(name=LAST_RUN_FIELD_NAME)
 	private Date lastRun;
+	
+	@Column(name=LAST_SUCCESS_RUN_FIELD_NAME)
 	private Date lastSuccessRun;
+	
+	@Column(name=LAST_RUNNING_TIME_FIELD_NAME)
 	private BigDecimal lastRunningTime;
+	
+	@Column(name=CURRENT_ELAPSED_TIME_FIELD_NAME)
 	private BigDecimal currentElapsedTime;
+	
+	@Column(name=LAST_RESULT_FIELD_NAME)
 	private RunResult lastResult;
+	
+	@Column(name=STATUS_FIELD_NAME)
 	private RunState status;
+	
+	@ManyToOne
+	@JoinColumn(name=TASK_STATUS_ID_FIELD_NAME)
+	private TaskStatus taskStatus;
 	
 	public TaskStepStatus() {}
 
+	@XmlElement(name="last_run")
 	public Date getLastRun() {
 		return lastRun;
 	}
@@ -25,6 +62,7 @@ public class TaskStepStatus {
 		this.lastRun = lastRun;
 	}
 
+	@XmlElement(name="last_success_run")
 	public Date getLastSuccessRun() {
 		return lastSuccessRun;
 	}
@@ -33,6 +71,7 @@ public class TaskStepStatus {
 		this.lastSuccessRun = lastSuccessRun;
 	}
 
+	@XmlElement(name="last_running_time")
 	public BigDecimal getLastRunningTime() {
 		return lastRunningTime;
 	}
@@ -41,6 +80,7 @@ public class TaskStepStatus {
 		this.lastRunningTime = lastRunningTime;
 	}
 
+	@XmlElement(name="current_elapsed_time")
 	public BigDecimal getCurrentElapsedTime() {
 		return currentElapsedTime;
 	}
@@ -49,6 +89,7 @@ public class TaskStepStatus {
 		this.currentElapsedTime = currentElapsedTime;
 	}
 
+	@XmlElement(name="last_result")
 	public RunResult getLastResult() {
 		return lastResult;
 	}
@@ -63,6 +104,23 @@ public class TaskStepStatus {
 
 	public void setStatus(RunState status) {
 		this.status = status;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	@XmlTransient
+	public TaskStatus getTaskStatus() {
+		return taskStatus;
+	}
+
+	public void setTaskStatus(TaskStatus taskStatus) {
+		this.taskStatus = taskStatus;
 	}
 	
 }
