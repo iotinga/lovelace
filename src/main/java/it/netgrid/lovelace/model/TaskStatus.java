@@ -18,9 +18,11 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.ForeignCollectionField;
 
+import it.netgrid.commons.data.CrudObject;
+
 @XmlRootElement
 @Entity(name="task_status")
-public class TaskStatus {
+public class TaskStatus implements CrudObject<Long> {
 
 	public static final String ID_FIELD_NAME = "tst_id";
 	public static final String SYSYEM_ID_FIELD_NAME = "tst_sys_id";

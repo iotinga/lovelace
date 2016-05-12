@@ -12,8 +12,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import it.netgrid.commons.data.CrudObject;
+
 @XmlRootElement
-public class TaskStepStatus {
+public class TaskStepStatus implements CrudObject<Long> {
 	
 	public static final String ID_FIELD_NAME = "tss_id";
 	public static final String LAST_RUN_FIELD_NAME = "tss_last_run";
