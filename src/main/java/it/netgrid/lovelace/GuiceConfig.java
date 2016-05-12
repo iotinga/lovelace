@@ -16,6 +16,7 @@ public class GuiceConfig extends GuiceServletContextListener {
 	@Override
 	protected Injector getInjector() {
 		return Guice.createInjector(new JerseyServletModule() {
+			
 			@Override
 			protected void configureServlets() {
 				install(new LovelaceModule());
@@ -28,6 +29,7 @@ public class GuiceConfig extends GuiceServletContextListener {
 				// Route all requests through GuiceContainer
 				serve("/*").with(GuiceContainer.class, params);
 			}
+			
 		});
 	}
 
