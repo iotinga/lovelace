@@ -1,13 +1,13 @@
 package it.netgrid.lovelace;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
 
 public class LovelaceModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		// TODO Auto-generated method stub
-		
+		bind(Configuration.class).to(PropertiesConfigurationImpl.class).in(Singleton.class);
 	}
 
 }

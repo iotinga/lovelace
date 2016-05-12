@@ -9,6 +9,9 @@ import com.google.inject.servlet.GuiceServletContextListener;
 import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
+import it.netgrid.lovelace.api.ApiModule;
+import it.netgrid.lovelace.model.ModelModule;
+
 public class GuiceConfig extends GuiceServletContextListener {
 	
 	private static final String RESOURCES_PACKAGES = "it.netgrid.lovelace.rest";
@@ -20,6 +23,8 @@ public class GuiceConfig extends GuiceServletContextListener {
 			@Override
 			protected void configureServlets() {
 				install(new LovelaceModule());
+				install(new ModelModule());
+				install(new ApiModule());
 
 				// Set init params for Jersey
 				Map<String, String> params = new HashMap<String, String>();
