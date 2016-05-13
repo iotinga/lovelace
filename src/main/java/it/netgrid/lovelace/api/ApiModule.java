@@ -1,8 +1,7 @@
 package it.netgrid.lovelace.api;
 
+import java.sql.SQLException;
 import java.util.Locale;
-
-import javax.xml.bind.JAXBException;
 
 import com.cronutils.descriptor.CronDescriptor;
 import com.cronutils.model.CronType;
@@ -14,9 +13,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
-import com.sun.jersey.api.json.JSONJAXBContext;
-import com.sun.jersey.api.json.JSONMarshaller;
-import com.sun.jersey.api.json.JSONUnmarshaller;
+import com.j256.ormlite.dao.Dao;
 
 import it.netgrid.commons.data.CrudService;
 import it.netgrid.lovelace.model.TaskRunStatus;
@@ -58,21 +55,8 @@ public class ApiModule extends AbstractModule {
 		return new CronParser(definition);
 	}
 	
-//	@Provides
-//	@Singleton
-//	public JSONJAXBContext getJSONJAXBContext() throws JAXBException {
-//		return new JSONJAXBContext();
-//	}
-	
 	@Provides
-	@Singleton
-	public JSONMarshaller getJSONMarshaller(JSONJAXBContext context) throws JAXBException {
-		return context.createJSONMarshaller();
-	}
-	
-	@Provides
-	@Singleton
-	public JSONUnmarshaller getJSONUnmarshaller(JSONJAXBContext context) throws JAXBException {
-		return context.createJSONUnmarshaller();
+	public SystemStatus getSystemStatus(Dao<SystemStatus,Long> systemStatusDao) throws SQLException {
+		return systemStatusDao.queryForId(SystemStatusCrudService.DEFAULT_SYSTEM_ID);
 	}
 }
