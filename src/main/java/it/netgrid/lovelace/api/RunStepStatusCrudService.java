@@ -1,0 +1,41 @@
+package it.netgrid.lovelace.api;
+
+import java.sql.SQLException;
+
+import com.google.inject.Inject;
+import com.j256.ormlite.support.ConnectionSource;
+
+import it.netgrid.lovelace.model.RunStepStatus;
+
+public class RunStepStatusCrudService extends TemplateCrudService<RunStepStatus, Long> {
+
+	@Inject
+	public RunStepStatusCrudService(ConnectionSource connection) {
+		super(connection);
+	}
+
+	@Override
+	public int createRaw(RunStepStatus arg0) throws SQLException, IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int deleteRaw(RunStepStatus arg0) throws SQLException, IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int updateRaw(RunStepStatus arg0) throws SQLException, IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public RunStepStatus read(Long key) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

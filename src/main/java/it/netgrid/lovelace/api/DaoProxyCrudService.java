@@ -2,6 +2,7 @@ package it.netgrid.lovelace.api;
 
 import java.sql.SQLException;
 
+import com.google.inject.Inject;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 
@@ -11,6 +12,7 @@ public class DaoProxyCrudService<T extends CrudObject<ID>, ID> extends TemplateC
 
 	private Dao<T, ID> dao;
 
+	@Inject
 	public DaoProxyCrudService(ConnectionSource connection, Dao<T, ID> dao) {
 		super(connection);
 		this.dao = dao;

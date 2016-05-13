@@ -1,6 +1,5 @@
 package it.netgrid.lovelace.model;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
@@ -14,9 +13,6 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-
-import com.j256.ormlite.dao.ForeignCollection;
-import com.j256.ormlite.field.ForeignCollectionField;
 
 import it.netgrid.commons.data.CrudObject;
 
@@ -32,13 +28,10 @@ public class TaskStatus implements CrudObject<Long> {
 	public static final String UPDATED_FIELD_NAME = "tst_updated";
 	public static final String CONFIG_FIELD_NAME = "tst_config";
 	public static final String SCHEDULE_FIELD_NAME = "tst_schedule";
-	public static final String NEXT_RUN_FIELD_NAME = "tst_next_run";
-	public static final String LAST_RUN_FIELD_NAME = "tst_last_run";
-	public static final String LAST_SUCCESS_RUN_FIELD_NAME = "tst_last_success_run";
-	public static final String LAST_RUNNING_TIME_FIELD_NAME = "tst_last_running_time";
-	public static final String CURRENT_START_TIME_FIELD_NAME = "tst_current_start_time";
-	public static final String LAST_RESULT_FIELD_NAME = "tst_last_result";
-	public static final String STATUS_FIELD_NAME = "tst_status";
+	public static final String NEXT_RUN_ID_FIELD_NAME = "tst_next_trs_id";
+	public static final String LAST_RUN_ID_FIELD_NAME = "tst_last_trs_id";
+	public static final String LAST_SUCCESS_RUN_ID_FIELD_NAME = "tst_last_success_trs_id";
+	public static final String CURRENT_RUN_ID_FIELD_NAME = "tst_current_trs_id";
 	
 	@Id
 	@GeneratedValue
@@ -66,36 +59,21 @@ public class TaskStatus implements CrudObject<Long> {
 	@Column(name=SCHEDULE_FIELD_NAME)
 	private String schedule;	
 	
-	@Column(name=NEXT_RUN_FIELD_NAME)
-	private Date nextRun;
+	@JoinColumn(name=NEXT_RUN_ID_FIELD_NAME)
+	private TaskRunStatus nextRun;
 	
-	@Column(name=LAST_RUN_FIELD_NAME)
-	private Date lastRun;
+	@Column(name=LAST_RUN_ID_FIELD_NAME)
+	private TaskRunStatus lastRun;
 	
-	@Column(name=CURRENT_START_TIME_FIELD_NAME)
-	private Date currentStartTime;
+	@Column(name=CURRENT_RUN_ID_FIELD_NAME)
+	private TaskRunStatus currentRun;
 	
-	@Column(name=LAST_SUCCESS_RUN_FIELD_NAME)
-	private Date lastSuccessRun;
-	
-	@Column(name=LAST_RUNNING_TIME_FIELD_NAME)
-	private BigDecimal lastRunningTime;
-	
-	@Transient
-	private BigDecimal currentElapsedTime;
-	
-	@Column(name=LAST_RESULT_FIELD_NAME)
-	private RunResult lastResult;
-	
-	@Column(name=STATUS_FIELD_NAME)
-	private RunState status;
+	@Column(name=LAST_SUCCESS_RUN_ID_FIELD_NAME)
+	private TaskRunStatus lastSuccessRun;
 	
 	@ManyToOne
 	@JoinColumn(name=SYSYEM_ID_FIELD_NAME)
 	private SystemStatus systemStatus;
-	
-	@ForeignCollectionField
-	private ForeignCollection<TaskStepStatus> taskSteps;
 	
 	public TaskStatus() {}
 
@@ -148,68 +126,6 @@ public class TaskStatus implements CrudObject<Long> {
 		this.schedule = schedule;
 	}
 
-	@XmlElement(name="next_run")
-	public Date getNextRun() {
-		return nextRun;
-	}
-
-	public void setNextRun(Date nextRun) {
-		this.nextRun = nextRun;
-	}
-
-	@XmlElement(name="last_run")
-	public Date getLastRun() {
-		return lastRun;
-	}
-
-	public void setLastRun(Date lastRun) {
-		this.lastRun = lastRun;
-	}
-
-	@XmlElement(name="last_success_run")
-	public Date getLastSuccessRun() {
-		return lastSuccessRun;
-	}
-
-	public void setLastSuccessRun(Date lastSuccessRun) {
-		this.lastSuccessRun = lastSuccessRun;
-	}
-
-	@XmlElement(name="last_running_time")
-	public BigDecimal getLastRunningTime() {
-		return lastRunningTime;
-	}
-
-	public void setLastRunningTime(BigDecimal lastRunningTime) {
-		this.lastRunningTime = lastRunningTime;
-	}
-
-	@XmlElement(name="current_elapsed_time")
-	public BigDecimal getCurrentElapsedTime() {
-		return currentElapsedTime;
-	}
-
-	public void setCurrentElapsedTime(BigDecimal currentElapsedTime) {
-		this.currentElapsedTime = currentElapsedTime;
-	}
-
-	@XmlElement(name="last_result")
-	public RunResult getLastResult() {
-		return lastResult;
-	}
-
-	public void setLastResult(RunResult lastResult) {
-		this.lastResult = lastResult;
-	}
-
-	public RunState getStatus() {
-		return status;
-	}
-
-	public void setStatus(RunState status) {
-		this.status = status;
-	}
-
 	public Long getId() {
 		return id;
 	}
@@ -226,16 +142,7 @@ public class TaskStatus implements CrudObject<Long> {
 	public void setMarshalledConfig(String marshalledConfig) {
 		this.marshalledConfig = marshalledConfig;
 	}
-
-	@XmlElement(name="current_start_time")
-	public Date getCurrentStartTime() {
-		return currentStartTime;
-	}
-
-	public void setCurrentStartTime(Date currentStartTime) {
-		this.currentStartTime = currentStartTime;
-	}
-
+	
 	@XmlTransient
 	public SystemStatus getSystemStatus() {
 		return systemStatus;
@@ -245,13 +152,40 @@ public class TaskStatus implements CrudObject<Long> {
 		this.systemStatus = systemStatus;
 	}
 
-	@XmlTransient
-	public ForeignCollection<TaskStepStatus> getTaskSteps() {
-		return taskSteps;
+	@XmlElement(name="next_run")
+	public TaskRunStatus getNextRun() {
+		return nextRun;
 	}
 
-	public void setTaskSteps(ForeignCollection<TaskStepStatus> taskSteps) {
-		this.taskSteps = taskSteps;
+	public void setNextRun(TaskRunStatus nextRun) {
+		this.nextRun = nextRun;
 	}
-	
+
+	@XmlElement(name="last_run")
+	public TaskRunStatus getLastRun() {
+		return lastRun;
+	}
+
+	public void setLastRun(TaskRunStatus lastRun) {
+		this.lastRun = lastRun;
+	}
+
+	@XmlElement(name="current_run")
+	public TaskRunStatus getCurrentRun() {
+		return currentRun;
+	}
+
+	public void setCurrentRun(TaskRunStatus currentRun) {
+		this.currentRun = currentRun;
+	}
+
+	@XmlElement(name="last_success_run")
+	public TaskRunStatus getLastSuccessRun() {
+		return lastSuccessRun;
+	}
+
+	public void setLastSuccessRun(TaskRunStatus lastSuccessRun) {
+		this.lastSuccessRun = lastSuccessRun;
+	}
+
 }

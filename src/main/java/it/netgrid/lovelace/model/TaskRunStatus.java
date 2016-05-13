@@ -10,19 +10,22 @@ import javax.persistence.JoinColumn;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
-@Entity(name="scheduled_run")
-public class ScheduledRun {
+import it.netgrid.commons.data.CrudObject;
 
-	public static final String ID_FIELD_NAME = "scr_id";
-	public static final String CREATION_DATE_FIELD_NAME = "scr_creation_date";
-	public static final String START_DATE_FIELD_NAME = "scr_start_date";
-	public static final String END_DATE_FIELD_NAME = "scr_end_date";
-	public static final String RUN_STATE_FIELD_NAME = "scr_run_state";
-	public static final String RUN_RESULT_FIELD_NAME = "scr_run_result";
-	public static final String TASK_ID_FIELD_NAME = "scr_tst_id";
-	public static final String TASK_STEP_STATUS_ID_FIELD_NAME = "scr_tss_id";
-	public static final String RUN_REASON_FIELD_NAME = "scr_run_reason";
+@XmlRootElement
+@Entity(name="task_run_status")
+public class TaskRunStatus implements CrudObject<Long> {
+
+	public static final String ID_FIELD_NAME = "trs_id";
+	public static final String CREATION_DATE_FIELD_NAME = "trs_creation_date";
+	public static final String START_DATE_FIELD_NAME = "trs_start_date";
+	public static final String END_DATE_FIELD_NAME = "trs_end_date";
+	public static final String RUN_STATE_FIELD_NAME = "trs_run_state";
+	public static final String RUN_RESULT_FIELD_NAME = "trs_run_result";
+	public static final String TASK_ID_FIELD_NAME = "trs_tst_id";
+	public static final String CURRENT_RUN_STEP_ID_FIELD_NAME = "trs_tss_id";
+	public static final String RUN_REASON_FIELD_NAME = "trs_run_reason";
+	public static final String RUN_STEP_STATUS_ID_FIELD_NAME = "trs_rss_id";
 	
 	@Id
 	@GeneratedValue
@@ -44,10 +47,10 @@ public class ScheduledRun {
 	@JoinColumn(name=TASK_ID_FIELD_NAME)
 	private TaskStatus task;
 	
-	@JoinColumn(name=TASK_STEP_STATUS_ID_FIELD_NAME)
-	private TaskStepStatus currentStep;
+	@JoinColumn(name=RUN_STEP_STATUS_ID_FIELD_NAME)
+	private RunStepStatus currentStep;
 	
-	public ScheduledRun() {}
+	public TaskRunStatus() {}
 
 	public Long getId() {
 		return id;
@@ -110,11 +113,11 @@ public class ScheduledRun {
 	}
 
 	@XmlElement(name="current_step")
-	public TaskStepStatus getCurrentStep() {
+	public RunStepStatus getCurrentStep() {
 		return currentStep;
 	}
 
-	public void setCurrentStep(TaskStepStatus currentStep) {
+	public void setCurrentStep(RunStepStatus currentStep) {
 		this.currentStep = currentStep;
 	}
 

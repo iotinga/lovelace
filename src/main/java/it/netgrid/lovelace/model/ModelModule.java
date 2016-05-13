@@ -30,7 +30,7 @@ public class ModelModule extends AbstractModule {
 		try {
 			TableUtils.createTableIfNotExists(retval, SystemStatus.class);
 			TableUtils.createTableIfNotExists(retval, TaskStatus.class);
-			TableUtils.createTableIfNotExists(retval, TaskStepStatus.class);
+			TableUtils.createTableIfNotExists(retval, RunStepStatus.class);
 		} catch (SQLException e) {
 			log.warn("SQL errors during DB creation");
 			log.debug("SQL errors during DB creation:",e);

@@ -2,12 +2,14 @@ package it.netgrid.lovelace.api;
 
 import java.sql.SQLException;
 
+import com.google.inject.Inject;
 import com.j256.ormlite.support.ConnectionSource;
 
 import it.netgrid.lovelace.model.TaskStatus;
 
 public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long> {
 
+	@Inject
 	public TaskStatusCrudService(ConnectionSource connection) {
 		super(connection);
 	}
