@@ -5,5 +5,6 @@ public enum RunState {
 	INITIALIZING,
 	RUN,
 	WAITING,
-	PAUSED
+	PAUSED,
+	END
 }

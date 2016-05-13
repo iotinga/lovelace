@@ -33,7 +33,6 @@ public class TaskStatus implements CrudObject<Long> {
 	public static final String UPDATED_FIELD_NAME = "tst_updated";
 	public static final String CONFIG_FIELD_NAME = "tst_config";
 	public static final String SCHEDULE_FIELD_NAME = "tst_schedule";
-	public static final String NEXT_RUN_ID_FIELD_NAME = "tst_next_trs_id";
 	public static final String LAST_RUN_ID_FIELD_NAME = "tst_last_trs_id";
 	public static final String LAST_SUCCESS_RUN_ID_FIELD_NAME = "tst_last_success_trs_id";
 	public static final String CURRENT_RUN_ID_FIELD_NAME = "tst_current_trs_id";
@@ -64,8 +63,8 @@ public class TaskStatus implements CrudObject<Long> {
 	@Column(name=SCHEDULE_FIELD_NAME)
 	private String schedule;	
 	
-	@JoinColumn(name=NEXT_RUN_ID_FIELD_NAME)
-	private TaskRunStatus nextRun;
+	@Transient
+	private Date nextRunTime;
 	
 	@Column(name=LAST_RUN_ID_FIELD_NAME)
 	private TaskRunStatus lastRun;
@@ -164,14 +163,14 @@ public class TaskStatus implements CrudObject<Long> {
 	public void setSystemStatus(SystemStatus systemStatus) {
 		this.systemStatus = systemStatus;
 	}
-
-	@XmlElement(name="next_run")
-	public TaskRunStatus getNextRun() {
-		return nextRun;
+	
+	@XmlElement(name="next_run_time")
+	public Date getNextRunTime() {
+		return nextRunTime;
 	}
 
-	public void setNextRun(TaskRunStatus nextRun) {
-		this.nextRun = nextRun;
+	public void setNextRunTime(Date nextRunTime) {
+		this.nextRunTime = nextRunTime;
 	}
 
 	@XmlElement(name="last_run")

@@ -13,6 +13,8 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.quartz.JobBuilder.*;
 import static org.quartz.TriggerBuilder.*;
@@ -30,6 +32,8 @@ import it.netgrid.lovelace.model.TaskRunStatus;
 import it.netgrid.lovelace.model.TaskStatus;
 
 public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long> {
+	
+	private static final Logger log = LoggerFactory.getLogger(TaskStatusCrudService.class);
 
 	public static final String INVALID_NAME = "name";
 	public static final String INVALID_CANONICAL_NAME = "canonical_name";
@@ -171,8 +175,11 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 			this.taskRunStatusDao.refresh(retval.getLastSuccessRun());
 		}
 		
-		if(retval.getNextRun() != null) {
-			this.taskRunStatusDao.refresh(retval.getNextRun());
+		try {
+			Trigger trigger = this.scheduler.getTrigger(this.getTriggerKey(retval));
+			retval.setNextRunTime(trigger.getNextFireTime());
+		} catch (SchedulerException e) {
+			log.warn("Unable to read trigger reference for task: " + retval.getName());
 		}
 
 		return retval;
@@ -196,7 +203,6 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 			.withSchedule(cronSchedule(task.getSchedule()))
 			.forJob(this.getJobKey(task))
 			.build();
-				
 		return retval;
 	}
 	
