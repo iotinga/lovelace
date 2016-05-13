@@ -1,6 +1,6 @@
 package it.netgrid.lovelace.model;
 
-import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,39 +19,51 @@ import it.netgrid.commons.data.CrudObject;
 public class RunStepStatus implements CrudObject<Long> {
 	
 	public static final String ID_FIELD_NAME = "rss_id";
-	public static final String CURRENT_ELAPSED_TIME_FIELD_NAME = "rss_current_elapsed_time";
-	public static final String STATUS_FIELD_NAME = "rss_status";
-	public static final String TASK_STATUS_ID_FIELD_NAME = "rss_tst_id";
 	public static final String TASK_RUN_STATUS_ID_FIELD_NAME = "rss_trs_id";
+	public static final String STEP_NAME_FIELD_NAME = "rss_name";
+	public static final String STATUS_FIELD_NAME = "rss_status";
+	public static final String START_TIME_FIELD_NAME = "rss_start_time";
+	public static final String END_TIME_FIELD_NAME = "rss_end_time";
 	
 	@Id
 	@GeneratedValue
 	@Column(name=ID_FIELD_NAME)
 	private Long id;
 	
-	@Column(name=CURRENT_ELAPSED_TIME_FIELD_NAME)
-	private BigDecimal currentElapsedTime;
+	@Column(name=START_TIME_FIELD_NAME)
+	private Date startTime;
+	
+	@Column(name=END_TIME_FIELD_NAME)
+	private Date endTime;
 	
 	@Column(name=STATUS_FIELD_NAME)
 	private RunState status;
 	
 	@ManyToOne
-	@JoinColumn(name=TASK_STATUS_ID_FIELD_NAME)
-	private TaskStatus taskStatus;
-	
-	@ManyToOne
 	@JoinColumn(name=TASK_RUN_STATUS_ID_FIELD_NAME)
 	private TaskRunStatus runStatus;
 	
+	@Column(name=STEP_NAME_FIELD_NAME)
+	private String name;
+	
 	public RunStepStatus() {}
 
-	@XmlElement(name="current_elapsed_time")
-	public BigDecimal getCurrentElapsedTime() {
-		return currentElapsedTime;
+	@XmlElement(name="start_time")
+	public Date getStartTime() {
+		return startTime;
+	}
+	
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
 	}
 
-	public void setCurrentElapsedTime(BigDecimal currentElapsedTime) {
-		this.currentElapsedTime = currentElapsedTime;
+	@XmlElement(name="end_time")
+	public Date getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
 	}
 
 	public RunState getStatus() {
@@ -71,12 +83,20 @@ public class RunStepStatus implements CrudObject<Long> {
 	}
 
 	@XmlTransient
-	public TaskStatus getTaskStatus() {
-		return taskStatus;
+	public TaskRunStatus getRunStatus() {
+		return runStatus;
 	}
 
-	public void setTaskStatus(TaskStatus taskStatus) {
-		this.taskStatus = taskStatus;
+	public void setRunStatus(TaskRunStatus runStatus) {
+		this.runStatus = runStatus;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

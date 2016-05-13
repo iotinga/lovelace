@@ -1,6 +1,8 @@
 package it.netgrid.lovelace.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -57,7 +60,12 @@ public class TaskRunStatus implements CrudObject<Long> {
 	@Column(name=CURRENT_RUN_STEP_ID_FIELD_NAME)
 	private RunStepStatus currentStep;
 	
-	public TaskRunStatus() {}
+	@Transient
+	private List<RunStepStatus> steps;
+	
+	public TaskRunStatus() {
+		this.steps = new ArrayList<RunStepStatus>();
+	}
 
 	public Long getId() {
 		return id;
@@ -135,4 +143,21 @@ public class TaskRunStatus implements CrudObject<Long> {
 	public void setReason(RunReason reason) {
 		this.reason = reason;
 	}
+
+	public ForeignCollection<RunStepStatus> getRunSteps() {
+		return runSteps;
+	}
+
+	public void setRunSteps(ForeignCollection<RunStepStatus> runSteps) {
+		this.runSteps = runSteps;
+	}
+
+	public List<RunStepStatus> getSteps() {
+		return steps;
+	}
+
+	public void setSteps(List<RunStepStatus> steps) {
+		this.steps = steps;
+	}
+	
 }

@@ -1,6 +1,7 @@
 package it.netgrid.lovelace.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +44,9 @@ public class SystemStatus implements CrudObject<Long> {
 	@ForeignCollectionField
 	private ForeignCollection<TaskStatus> tasksStatus;
 	
-	public SystemStatus() {}
+	public SystemStatus() {
+		this.tasks = new ArrayList<TaskStatus>();
+	}
 
 	public BigDecimal getUptime() {
 		return uptime;

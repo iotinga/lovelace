@@ -1,5 +1,6 @@
 package it.netgrid.lovelace.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +86,9 @@ public class TaskStatus implements CrudObject<Long> {
 	@Transient
 	private List<TaskRunStatus> runs;
 
-	public TaskStatus() {}
+	public TaskStatus() {
+		this.runs = new ArrayList<TaskRunStatus>();
+	}
 
 	@XmlElement(name="canonical_name")
 	public String getCanonicalName() {

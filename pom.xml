@@ -17,6 +17,8 @@
 		<ormlite.version>4.48</ormlite.version>
 		<junit.version>4.12</junit.version>
 		<jetty.version>9.3.8.v20160314</jetty.version>
+		<validator.version>1.5.1</validator.version>
+		<lang3.version>3.4</lang3.version>
 	</properties>
 
 	<dependencies>
@@ -25,7 +27,18 @@
 			<artifactId>commons</artifactId>
 			<version>${commons.version}</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>commons-validator</groupId>
+			<artifactId>commons-validator</artifactId>
+			<version>${validator.version}</version>
+		</dependency>
+				<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${lang3.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-server</artifactId>
@@ -64,9 +77,9 @@
 			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
-           <groupId>org.slf4j</groupId>
-           <artifactId>slf4j-simple</artifactId>
-           <version>${slf4j.version}</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 
 		<!-- Object persistency -->
