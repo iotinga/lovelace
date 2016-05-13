@@ -1,6 +1,7 @@
 package it.netgrid.lovelace.model;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Column;
@@ -13,6 +14,9 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.field.ForeignCollectionField;
 
 import it.netgrid.commons.data.CrudObject;
 
@@ -75,6 +79,12 @@ public class TaskStatus implements CrudObject<Long> {
 	@JoinColumn(name=SYSYEM_ID_FIELD_NAME)
 	private SystemStatus systemStatus;
 	
+	@ForeignCollectionField
+	private ForeignCollection<TaskRunStatus> taskRuns;
+	
+	@Transient
+	private List<TaskRunStatus> runs;
+
 	public TaskStatus() {}
 
 	@XmlElement(name="canonical_name")
@@ -186,6 +196,23 @@ public class TaskStatus implements CrudObject<Long> {
 
 	public void setLastSuccessRun(TaskRunStatus lastSuccessRun) {
 		this.lastSuccessRun = lastSuccessRun;
+	}
+
+	@XmlTransient
+	public ForeignCollection<TaskRunStatus> getTaskRuns() {
+		return taskRuns;
+	}
+
+	public void setTaskRuns(ForeignCollection<TaskRunStatus> taskRuns) {
+		this.taskRuns = taskRuns;
+	}
+
+	public List<TaskRunStatus> getRuns() {
+		return runs;
+	}
+
+	public void setRuns(List<TaskRunStatus> runs) {
+		this.runs = runs;
 	}
 
 }

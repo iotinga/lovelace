@@ -7,8 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.field.ForeignCollectionField;
 
 import it.netgrid.commons.data.CrudObject;
 
@@ -25,7 +29,6 @@ public class TaskRunStatus implements CrudObject<Long> {
 	public static final String TASK_ID_FIELD_NAME = "trs_tst_id";
 	public static final String CURRENT_RUN_STEP_ID_FIELD_NAME = "trs_tss_id";
 	public static final String RUN_REASON_FIELD_NAME = "trs_run_reason";
-	public static final String RUN_STEP_STATUS_ID_FIELD_NAME = "trs_rss_id";
 	
 	@Id
 	@GeneratedValue
@@ -44,10 +47,14 @@ public class TaskRunStatus implements CrudObject<Long> {
 	@Column(name=RUN_REASON_FIELD_NAME)
 	private RunReason reason;
 	
+	@ManyToOne
 	@JoinColumn(name=TASK_ID_FIELD_NAME)
 	private TaskStatus task;
 	
-	@JoinColumn(name=RUN_STEP_STATUS_ID_FIELD_NAME)
+	@ForeignCollectionField(orderColumnName=RunStepStatus.ID_FIELD_NAME)
+	private ForeignCollection<RunStepStatus> runSteps;
+	
+	@Column(name=CURRENT_RUN_STEP_ID_FIELD_NAME)
 	private RunStepStatus currentStep;
 	
 	public TaskRunStatus() {}
