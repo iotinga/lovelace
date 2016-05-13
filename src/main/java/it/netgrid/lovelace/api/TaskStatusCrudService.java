@@ -25,6 +25,7 @@ import com.j256.ormlite.support.ConnectionSource;
 
 import it.netgrid.commons.SerializableUtils;
 import it.netgrid.commons.data.CrudService;
+import it.netgrid.lovelace.Configuration;
 import it.netgrid.lovelace.model.TaskRunStatus;
 import it.netgrid.lovelace.model.TaskStatus;
 
@@ -35,9 +36,9 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 	public static final String INVALID_SCHEDULER = "scheduler";
 	public static final String INVALID_SCHEDULER_JOB_DETAILS = "scheduler/job_details";
 	public static final String INVALID_SCHEDULER_TRIGGER = "scheduler/trigger";
-	public static final String QUARTZ_GROUP_NAME = "global";
 	private static final String TRIGGER_NAME_FORMAT = "%s#TRIGGER";
 	
+	private final Configuration config;
 	private final Scheduler scheduler;
 	private final CronValidator cronValidator;
 	private final Dao<TaskStatus, Long> taskStatusDao;
@@ -46,12 +47,14 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 	
 	@Inject
 	public TaskStatusCrudService(ConnectionSource connection, 
+			Configuration config,
 			Scheduler scheduler, 
 			CronValidator cronValidator,
 			Dao<TaskStatus, Long> taskStatusDao,
 			Dao<TaskRunStatus, Long> taskRunStatusDao,
 			CrudService<TaskRunStatus, Long> taskRunStatusCrudService) {
 		super(connection);
+		this.config = config;
 		this.scheduler = scheduler;
 		this.cronValidator = cronValidator;
 		this.taskStatusDao = taskStatusDao;
@@ -212,7 +215,7 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 	}
 	
 	private TriggerKey getTriggerKey(TaskStatus task) {
-		TriggerKey retval = new TriggerKey(this.getTriggerName(task), QUARTZ_GROUP_NAME);
+		TriggerKey retval = new TriggerKey(this.getTriggerName(task), this.config.getQuartzGroupName());
 		return retval;
 	}
 	
@@ -221,7 +224,7 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 	}
 	
 	private JobKey getJobKey(TaskStatus task) {
-		JobKey retval = new JobKey(task.getName(), QUARTZ_GROUP_NAME);
+		JobKey retval = new JobKey(task.getName(), this.config.getQuartzGroupName());
 		return retval;
 	}
 }

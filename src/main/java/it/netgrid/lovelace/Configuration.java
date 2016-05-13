@@ -9,4 +9,5 @@ public interface Configuration {
 	public Properties getProperties();
 	public String getJdbcUsername();
 	public String getJdbcPassword();
+	public String getQuartzGroupName();
 }

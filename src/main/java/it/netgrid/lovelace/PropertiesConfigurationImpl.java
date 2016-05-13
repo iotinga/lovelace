@@ -22,6 +22,7 @@ public class PropertiesConfigurationImpl implements Configuration {
 	private static final String KEY_BIND_ADDRESS = "bindAddress";
 	private static final String KEY_BIND_PORT = "bindPort";
 	
+	private static final String DEFAULT_QUARTZ_GROUP_NAME = "global";
 	private static final String DEFAULT_JDBC_CONNECITON_URL = "jdbc:h2:mem:lovelace?zeroDateTimeBehavior=convertToNull";
 	private static final String DEFAULT_JDBC_USERNAME = "root";
 	private static final String DEFAULT_JDBC_PASSWORD = "root";
@@ -115,5 +116,10 @@ public class PropertiesConfigurationImpl implements Configuration {
 	@Override
 	public int getBindPort() {
 		return Integer.parseInt(this.getProperties().getProperty(KEY_BIND_PORT, DEFAULT_BIND_PORT));
+	}
+
+	@Override
+	public String getQuartzGroupName() {
+		return DEFAULT_QUARTZ_GROUP_NAME;
 	}
 }
