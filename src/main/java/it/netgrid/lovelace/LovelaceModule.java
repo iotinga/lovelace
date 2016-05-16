@@ -16,7 +16,7 @@ public class LovelaceModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		bind(Configuration.class).to(PropertiesConfigurationImpl.class).in(Singleton.class);
+		// NOTHING TO DO
 	}
 
 	@Provides
