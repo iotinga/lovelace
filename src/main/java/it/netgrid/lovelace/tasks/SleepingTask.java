@@ -1,24 +1,25 @@
 package it.netgrid.lovelace.tasks;
 
-import java.util.List;
-
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.netgrid.lovelace.Task;
-import it.netgrid.lovelace.model.RunStepStatus;
 import it.netgrid.lovelace.model.TaskStatus;
 
 public class SleepingTask implements Task {
 	
 	private static final Logger log = LoggerFactory.getLogger(SleepingTask.class);
-
+	private static final int DEFAULT_SLEEP_MILLIS = 2000;
+	private static final String SLEEP_MILLIS_FIELD_NAME = "sleep_millis";
+	
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		try {
-			Thread.sleep(6000);
+			int millis = this.getSleepMillis(arg0);
+			Thread.sleep(millis);
+			log.info("Slept for " + millis);
 		} catch (InterruptedException e) {
 			log.debug("Sleep interrupt", e);
 		}
@@ -31,9 +32,17 @@ public class SleepingTask implements Task {
 	}
 
 	@Override
-	public List<RunStepStatus> getStepsStatus() {
-		// TODO Auto-generated method stub
-		return null;
+	public int getStepsCount() {
+		return 1;
+	}
+	
+	private int getSleepMillis(JobExecutionContext context) {
+		try{
+			String millis = context.getJobDetail().getJobDataMap().getString(SLEEP_MILLIS_FIELD_NAME);
+			return Integer.parseInt(millis);
+		} catch(Exception e) {
+			return DEFAULT_SLEEP_MILLIS;
+		}
 	}
 
 }
