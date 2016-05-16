@@ -14,24 +14,6 @@ public class GuiceConfig extends GuiceServletContextListener {
 	@Override
 	protected Injector getInjector() {
 		return injector;
-//		return Guice.createInjector(new JerseyServletModule() {
-//			
-//			@Override
-//			protected void configureServlets() {
-//				install(new LovelaceModule());
-//				install(new ModelModule());
-//				install(new ApiModule());
-//
-//				// Set init params for Jersey
-//				Map<String, String> params = new HashMap<String, String>();
-//				params.put("com.sun.jersey.config.property.packages", RESOURCES_PACKAGES);
-//				params.put("com.sun.jersey.api.json.POJOMappingFeature", "true");
-//
-//				// Route all requests through GuiceContainer
-//				serve("/*").with(GuiceContainer.class, params);
-//			}
-//			
-//		});
 	}
 
 }

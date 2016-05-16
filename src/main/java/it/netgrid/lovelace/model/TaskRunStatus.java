@@ -57,7 +57,7 @@ public class TaskRunStatus implements CrudObject<Long> {
 	@ForeignCollectionField(orderColumnName=RunStepStatus.ID_FIELD_NAME)
 	private ForeignCollection<RunStepStatus> runSteps;
 	
-	@Column(name=CURRENT_RUN_STEP_ID_FIELD_NAME)
+	@JoinColumn(name=CURRENT_RUN_STEP_ID_FIELD_NAME)
 	private RunStepStatus currentStep;
 	
 	@Transient

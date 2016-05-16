@@ -66,13 +66,13 @@ public class TaskStatus implements CrudObject<Long> {
 	@Transient
 	private Date nextRunTime;
 	
-	@Column(name=LAST_RUN_ID_FIELD_NAME)
+	@JoinColumn(name=LAST_RUN_ID_FIELD_NAME)
 	private TaskRunStatus lastRun;
 	
-	@Column(name=CURRENT_RUN_ID_FIELD_NAME)
+	@JoinColumn(name=CURRENT_RUN_ID_FIELD_NAME)
 	private TaskRunStatus currentRun;
 	
-	@Column(name=LAST_SUCCESS_RUN_ID_FIELD_NAME)
+	@JoinColumn(name=LAST_SUCCESS_RUN_ID_FIELD_NAME)
 	private TaskRunStatus lastSuccessRun;
 	
 	@ManyToOne

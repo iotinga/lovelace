@@ -12,7 +12,7 @@ public class SleepingTask implements Task {
 	
 	private static final Logger log = LoggerFactory.getLogger(SleepingTask.class);
 	private static final int DEFAULT_SLEEP_MILLIS = 2000;
-	private static final String SLEEP_MILLIS_FIELD_NAME = "sleep_millis";
+	public static final String SLEEP_MILLIS_FIELD_NAME = "sleep_millis";
 	
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {

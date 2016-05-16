@@ -1,5 +1,7 @@
 package it.netgrid.lovelace;
 
+import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -25,6 +27,9 @@ import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import it.netgrid.lovelace.api.ApiModule;
 import it.netgrid.lovelace.model.ModelModule;
 import it.netgrid.lovelace.quartz.GuiceJobFactory;
+import it.netgrid.lovelace.quartz.LovelaceSchedulerListener;
+import it.netgrid.lovelace.quartz.RunStatusJobListener;
+import it.netgrid.lovelace.quartz.RunStatusTriggerListener;
 
 public class Main {
 	
@@ -43,11 +48,11 @@ public class Main {
 			Main.config = new PropertiesConfigurationImpl();
 		}
 		
-		Main.injector = Main.buildInjector();
 		
 		try {
 			// Create scheduler
 			Main.scheduler = StdSchedulerFactory.getDefaultScheduler();
+			Main.injector = Main.createInjector();
 			Main.scheduler.setJobFactory(Main.injector.getInstance(GuiceJobFactory.class));
 			
 			// Create the server
@@ -82,22 +87,13 @@ public class Main {
 		} catch (SchedulerException e) {
 			log.error("Cannot init scheduler", e);
 		}
-	}
+	}		
 	
-	public static Scheduler getScheduler() {
-		return Main.scheduler;
-	}
-	
-	public static Server getServer() {
-		return Main.server;
-	}
-	
-	public static Injector buildInjector() {
+	private static Injector createInjector() {
 		return Guice.createInjector(new JerseyServletModule() {
 					
 			@Override
 			protected void configureServlets() {
-				install(new LovelaceModule());
 				install(new ModelModule());
 				install(new ApiModule());
 
@@ -114,6 +110,22 @@ public class Main {
 			@Singleton
 			public Configuration getConfig() {
 				return config;
+			}
+
+
+			@Provides
+			@Singleton
+			public Scheduler getScheduler(LovelaceSchedulerListener schedulerListener, RunStatusJobListener jobListener, RunStatusTriggerListener triggerListener) throws SchedulerException {
+				Main.scheduler.getListenerManager().addSchedulerListener(schedulerListener);
+				Main.scheduler.getListenerManager().addJobListener(jobListener, groupEquals(config.getQuartzGroupName()));
+				Main.scheduler.getListenerManager().addTriggerListener(triggerListener, groupEquals(config.getQuartzGroupName()));
+				return Main.scheduler;
+			}
+			
+			@Provides
+			@Singleton
+			public Server getServer() {
+				return server;
 			}
 					
 		});
