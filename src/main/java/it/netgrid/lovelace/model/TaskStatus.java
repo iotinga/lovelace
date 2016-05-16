@@ -16,9 +16,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang3.SerializationUtils;
+
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.ForeignCollectionField;
 
+import it.netgrid.commons.SerializableUtils;
 import it.netgrid.commons.data.CrudObject;
 
 @XmlRootElement
@@ -122,7 +125,11 @@ public class TaskStatus implements CrudObject<Long> {
 		this.updated = updated;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map<String, String> getConfig() {
+		if(this.config == null && this.marshalledConfig != null) {
+			this.config = (Map<String, String>) SerializableUtils.deserializeBase64(this.marshalledConfig);
+		}
 		return config;
 	}
 

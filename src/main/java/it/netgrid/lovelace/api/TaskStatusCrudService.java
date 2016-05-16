@@ -2,7 +2,9 @@ package it.netgrid.lovelace.api;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
 import org.quartz.Job;
@@ -130,7 +132,8 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 			JobDetail jobDetail = this.scheduler.getJobDetail(this.getJobKey(task));
 			jobDetail.getJobDataMap().clear();
 			jobDetail.getJobDataMap().putAll(task.getConfig());
-			this.scheduler.addJob(jobDetail, true);
+			Set<Trigger> triggers = new HashSet<Trigger>(this.scheduler.getTriggersOfJob(this.getJobKey(task)));
+			this.scheduler.scheduleJob(jobDetail, triggers, true);
 		} catch (SchedulerException e) {
 			throw new IllegalArgumentException(INVALID_SCHEDULER_JOB_DETAILS);
 		}
