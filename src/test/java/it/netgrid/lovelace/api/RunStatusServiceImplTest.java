@@ -39,6 +39,9 @@ public class RunStatusServiceImplTest {
 	@Inject
 	private Dao<TaskRunStatus, Long> taskRunDao;
 	
+	@Inject
+	private Dao<RunStepStatus, Long> runStepDao;
+	
 	@Before
 	public void setUp() {
 		persistence.setup();
@@ -59,8 +62,15 @@ public class RunStatusServiceImplTest {
 		assertNotNull(step.getRunStatus());
 		assertNotNull(step.getRunStatus().getId());
 		
+		task = this.taskStatusDao.queryForId((long)1);
 		TaskRunStatus runStatus = taskRunDao.queryForId(step.getRunStatus().getId());
 		
 		assertEquals(runStatus.getCreationDate(), step.getRunStatus().getCreationDate());
+		assertEquals(runStatus, task.getCurrentRun());
+	}
+	
+	@Test
+	public void testRunStepStatusCreationOnStart() {
+		
 	}
 }
