@@ -29,6 +29,7 @@ public class ApiModule extends AbstractModule {
 		bind(new TypeLiteral<CrudService<TaskStatus, Long>>() {}).to(TaskStatusCrudService.class).in(Singleton.class);
 		bind(new TypeLiteral<CrudService<TaskRunStatus, Long>>() {}).to(TaskRunStatusCrudService.class).in(Singleton.class);
 		bind(new TypeLiteral<CrudService<RunStepStatus, Long>>() {}).to(RunStepStatusCrudService.class).in(Singleton.class);
+		bind(RunStatusService.class).to(RunStatusServiceImpl.class).in(Singleton.class);
 	}
 
 	@Provides
