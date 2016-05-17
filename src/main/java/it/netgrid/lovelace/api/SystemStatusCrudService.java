@@ -1,6 +1,8 @@
 package it.netgrid.lovelace.api;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.Date;
 
 import com.google.inject.Inject;
 import com.j256.ormlite.dao.Dao;
@@ -24,7 +26,7 @@ public class SystemStatusCrudService extends TemplateCrudService<SystemStatus, L
 
 	@Override
 	public int createRaw(SystemStatus arg0) throws SQLException, IllegalArgumentException {
-		throw new IllegalArgumentException(INVALID_REQUEST);
+		return this.systemStatusDao.create(arg0);
 	}
 
 	@Override
@@ -39,7 +41,12 @@ public class SystemStatusCrudService extends TemplateCrudService<SystemStatus, L
 
 	@Override
 	public SystemStatus read(Long key) throws SQLException {
-		SystemStatus retval = this.systemStatusDao.queryForId(DEFAULT_SYSTEM_ID);
+		SystemStatus retval = this.systemStatusDao.queryForId(key);
+		
+		if(retval == null) {
+			this.create(this.buildSystemStatus());
+			return this.read(key);
+		}
 		
 		for(TaskStatus task : retval.getTasksStatus()) {
 			retval.getTasks().add(task);
@@ -48,4 +55,10 @@ public class SystemStatusCrudService extends TemplateCrudService<SystemStatus, L
 		return retval;
 	}
 
+	private SystemStatus buildSystemStatus() {
+		SystemStatus retval = new SystemStatus();
+		retval.setActiveFrom(new Date());
+		retval.setUptime(BigDecimal.ZERO);
+		return retval;
+	}
 }
