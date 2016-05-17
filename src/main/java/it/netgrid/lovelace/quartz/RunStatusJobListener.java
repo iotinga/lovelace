@@ -54,7 +54,7 @@ public class RunStatusJobListener implements JobListener {
 		TaskStatus task = this.taskByContext(context);
 		try {
 			this.service.start(task, START_STEP_NAME);
-			this.service.end(task, RunResult.ABORT);
+			this.service.end(task, RunResult.ABORT, RunResult.ABORT);
 		} catch (SQLException e) {
 			log.warn("Unable to set task status", e);
 		}
@@ -65,7 +65,7 @@ public class RunStatusJobListener implements JobListener {
 		TaskStatus task = this.taskByContext(context);
 		try {
 			RunResult result = jobException == null ? RunResult.SUCCESS : RunResult.ERROR;
-			this.service.end(task, result);
+			this.service.end(task, result, result);
 		} catch (SQLException e) {
 			log.error("Unable to retrieve current run status");
 			return;

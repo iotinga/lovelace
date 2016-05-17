@@ -21,6 +21,7 @@ public class RunStepStatus implements CrudObject<Long> {
 	public static final String ID_FIELD_NAME = "rss_id";
 	public static final String TASK_RUN_STATUS_ID_FIELD_NAME = "rss_trs_id";
 	public static final String STEP_NAME_FIELD_NAME = "rss_name";
+	public static final String RESULT_FIELD_NAME = "rss_result";
 	public static final String STATUS_FIELD_NAME = "rss_status";
 	public static final String START_TIME_FIELD_NAME = "rss_start_time";
 	public static final String END_TIME_FIELD_NAME = "rss_end_time";
@@ -38,6 +39,9 @@ public class RunStepStatus implements CrudObject<Long> {
 	
 	@Column(name=STATUS_FIELD_NAME)
 	private RunState status;
+	
+	@Column(name=RESULT_FIELD_NAME)
+	private RunResult result;
 	
 	@ManyToOne
 	@JoinColumn(name=TASK_RUN_STATUS_ID_FIELD_NAME)
@@ -97,6 +101,14 @@ public class RunStepStatus implements CrudObject<Long> {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public RunResult getResult() {
+		return result;
+	}
+
+	public void setResult(RunResult result) {
+		this.result = result;
 	}
 	
 }

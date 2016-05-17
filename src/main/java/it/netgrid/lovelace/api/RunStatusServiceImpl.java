@@ -62,9 +62,8 @@ public class RunStatusServiceImpl implements RunStatusService {
 				
 				runStatus.setCurrentStep(stepStatus);
 				taskRunStatusCrudService.updateRaw(runStatus);
-				
-				int x = taskRunStatusDao.refresh(stepStatus.getRunStatus());
-				
+				taskRunStatusDao.refresh(stepStatus.getRunStatus());
+
 				return stepStatus;
 			}
 			
@@ -82,7 +81,7 @@ public class RunStatusServiceImpl implements RunStatusService {
 				taskRunStatusDao.refresh(task.getCurrentRun());
 				TaskRunStatus runStatus = task.getCurrentRun();
 				RunStepStatus oldStepStatus = getCurrentStep(runStatus);
-				end(oldStepStatus);
+				end(oldStepStatus, currentStepResult);
 				RunStepStatus stepStatus = buildRunStepStatus(runStatus, nextStepName);
 				runStepCrudService.createRaw(stepStatus);
 				runStatus.setCurrentStep(stepStatus);
@@ -97,7 +96,7 @@ public class RunStatusServiceImpl implements RunStatusService {
 	}
 
 	@Override
-	public RunStepStatus end(final TaskStatus task, final RunResult result) throws SQLException {
+	public RunStepStatus end(final TaskStatus task, final RunResult currentStepResult, final RunResult taskResult) throws SQLException {
 		RunStepStatus runStatus = TransactionManager.callInTransaction(connection, new Callable<RunStepStatus>() {
 
 			@Override
@@ -105,15 +104,15 @@ public class RunStatusServiceImpl implements RunStatusService {
 				taskRunStatusDao.refresh(task.getCurrentRun());
 				TaskRunStatus taskRun = task.getCurrentRun();
 				RunStepStatus stepStatus = getCurrentStep(taskRun); 
-				end(stepStatus);
+				end(stepStatus, currentStepResult);
 				taskRun.setEndDate(new Date());
-				taskRun.setResult(result);
+				taskRun.setResult(taskResult);
 				taskRun.setState(RunState.END);
 				taskRunStatusCrudService.updateRaw(taskRun);
 				
 				task.setLastRun(taskRun);
 				task.setCurrentRun(null);
-				if(result == RunResult.SUCCESS) {
+				if(taskResult == RunResult.SUCCESS) {
 					task.setLastSuccessRun(taskRun);
 				}
 				taskStatusCrudService.updateRaw(task);
@@ -137,9 +136,10 @@ public class RunStatusServiceImpl implements RunStatusService {
 		}
 	}
 	
-	private void end(RunStepStatus step) throws IllegalArgumentException, SQLException {
+	private void end(RunStepStatus step, RunResult result) throws IllegalArgumentException, SQLException {
 		step.setEndTime(new Date());
 		step.setStatus(RunState.END);
+		step.setResult(result);
 		this.runStepCrudService.updateRaw(step);
 	}
 	
