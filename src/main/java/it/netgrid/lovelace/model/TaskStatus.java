@@ -16,8 +16,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.lang3.SerializationUtils;
-
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.ForeignCollectionField;
 
@@ -66,9 +64,6 @@ public class TaskStatus implements CrudObject<Long> {
 	@Column(name=SCHEDULE_FIELD_NAME)
 	private String schedule;	
 	
-	@Transient
-	private Date nextRunTime;
-	
 	@JoinColumn(name=LAST_RUN_ID_FIELD_NAME)
 	private TaskRunStatus lastRun;
 	
@@ -87,6 +82,9 @@ public class TaskStatus implements CrudObject<Long> {
 	
 	@Transient
 	private List<TaskRunStatus> runs;
+	
+	@Transient
+	private Date nextRunTime;
 
 	public TaskStatus() {
 		this.runs = new ArrayList<TaskRunStatus>();

@@ -153,6 +153,9 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		oldTask.setMarshalledConfig(this.getConfigString(task.getConfig()));
 		oldTask.setSchedule(task.getSchedule());
 		oldTask.setUpdated(new Date());
+		oldTask.setCurrentRun(task.getCurrentRun());
+		oldTask.setLastRun(task.getLastRun());
+		oldTask.setLastSuccessRun(task.getLastSuccessRun());
 		
 		retval += this.taskStatusDao.update(oldTask);
 		

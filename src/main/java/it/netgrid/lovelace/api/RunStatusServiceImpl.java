@@ -53,14 +53,18 @@ public class RunStatusServiceImpl implements RunStatusService {
 			public RunStepStatus call() throws Exception {
 				TaskRunStatus runStatus = buildRunStatus(task);
 				taskRunStatusCrudService.createRaw(runStatus);
+				
 				task.setCurrentRun(runStatus);
 				taskStatusCrudService.updateRaw(task);
+				
 				RunStepStatus stepStatus = buildRunStepStatus(runStatus, firstStepName);
 				runStepCrudService.createRaw(stepStatus);
+				
 				runStatus.setCurrentStep(stepStatus);
 				taskRunStatusCrudService.updateRaw(runStatus);
-				stepStatus = runStepCrudService.read(stepStatus.getId());
-				taskRunStatusDao.refresh(stepStatus.getRunStatus());
+				
+				int x = taskRunStatusDao.refresh(stepStatus.getRunStatus());
+				
 				return stepStatus;
 			}
 			
