@@ -11,13 +11,13 @@ import javax.ws.rs.core.MediaType;
 import com.google.inject.Inject;
 
 import it.netgrid.commons.data.CrudService;
+import it.netgrid.lovelace.api.SystemStatusCrudService;
 import it.netgrid.lovelace.model.SystemStatus;
 
 @Path("/")
 public class SystemStatusResource {
 	
 	private final CrudService<SystemStatus, Long> systemStatusService;
-	private static final Long DEFAULT_STATUS_ID = (long)1;
 	
 	@Inject
 	public SystemStatusResource(CrudService<SystemStatus, Long> systemStatusService) {
@@ -28,7 +28,8 @@ public class SystemStatusResource {
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})	
 	public SystemStatus get() throws IllegalArgumentException, SQLException {
-		return this.systemStatusService.read(DEFAULT_STATUS_ID);
+		return this.systemStatusService.read(SystemStatusCrudService.DEFAULT_SYSTEM_ID);
 	}
+	
 	
 }

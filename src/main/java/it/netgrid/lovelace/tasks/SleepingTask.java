@@ -2,6 +2,7 @@ package it.netgrid.lovelace.tasks;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.UnableToInterruptJobException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +44,11 @@ public class SleepingTask implements Task {
 		} catch(Exception e) {
 			return DEFAULT_SLEEP_MILLIS;
 		}
+	}
+
+	@Override
+	public void interrupt() throws UnableToInterruptJobException {
+		// NOTHING TO DO
 	}
 
 }

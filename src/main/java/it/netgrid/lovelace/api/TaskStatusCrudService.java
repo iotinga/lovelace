@@ -10,11 +10,9 @@ import org.apache.commons.lang3.Validate;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
-import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
-import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +27,9 @@ import com.j256.ormlite.support.ConnectionSource;
 
 import it.netgrid.commons.SerializableUtils;
 import it.netgrid.commons.data.CrudService;
-import it.netgrid.lovelace.Configuration;
 import it.netgrid.lovelace.model.TaskRunStatus;
 import it.netgrid.lovelace.model.TaskStatus;
+import it.netgrid.lovelace.quartz.SchedulerUtils;
 
 public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long> {
 	
@@ -42,10 +40,9 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 	public static final String INVALID_SCHEDULER = "scheduler";
 	public static final String INVALID_SCHEDULER_JOB_DETAILS = "scheduler/job_details";
 	public static final String INVALID_SCHEDULER_TRIGGER = "scheduler/trigger";
-	private static final String TRIGGER_NAME_FORMAT = "%s#TRIGGER";
 	
-	private final Configuration config;
 	private final Scheduler scheduler;
+	private final SchedulerUtils schedulerUtils;
 	private final CronValidator cronValidator;
 	private final Dao<TaskStatus, Long> taskStatusDao;
 	private final Dao<TaskRunStatus, Long> taskRunStatusDao;
@@ -53,15 +50,15 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 	
 	@Inject
 	public TaskStatusCrudService(ConnectionSource connection, 
-			Configuration config,
+			SchedulerUtils schedulerUtils,
 			Scheduler scheduler, 
 			CronValidator cronValidator,
 			Dao<TaskStatus, Long> taskStatusDao,
 			Dao<TaskRunStatus, Long> taskRunStatusDao,
 			CrudService<TaskRunStatus, Long> taskRunStatusCrudService) {
 		super(connection);
-		this.config = config;
 		this.scheduler = scheduler;
+		this.schedulerUtils = schedulerUtils;
 		this.cronValidator = cronValidator;
 		this.taskStatusDao = taskStatusDao;
 		this.taskRunStatusDao = taskRunStatusDao;
@@ -80,7 +77,7 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		
 		int retval = this.taskStatusDao.create(task);
 		
-		JobDetail detail = this.getJobDetail(task);
+		JobDetail detail = this.createJobDetail(task);
 		Trigger trigger = this.getTrigger(task);
 
 		// Scheduler operations have to been treated as "COMMIT"s:
@@ -108,7 +105,7 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		// Scheduler can rollback DB operations, 
 		// DB will not rollback scheduler operations
 		try {
-			this.scheduler.deleteJob(this.getJobKey(task));
+			this.scheduler.deleteJob(this.schedulerUtils.getJobKey(task));
 		} catch (SchedulerException e) {
 			throw new IllegalArgumentException(INVALID_SCHEDULER);
 		}
@@ -129,10 +126,10 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		int retval = 0;
 		try {
 			// Updating Job Details
-			JobDetail jobDetail = this.scheduler.getJobDetail(this.getJobKey(task));
+			JobDetail jobDetail = this.scheduler.getJobDetail(this.schedulerUtils.getJobKey(task));
 			jobDetail.getJobDataMap().clear();
 			jobDetail.getJobDataMap().putAll(task.getConfig());
-			Set<Trigger> triggers = new HashSet<Trigger>(this.scheduler.getTriggersOfJob(this.getJobKey(task)));
+			Set<Trigger> triggers = new HashSet<Trigger>(this.scheduler.getTriggersOfJob(this.schedulerUtils.getJobKey(task)));
 			this.scheduler.scheduleJob(jobDetail, triggers, true);
 		} catch (SchedulerException e) {
 			throw new IllegalArgumentException(INVALID_SCHEDULER_JOB_DETAILS);
@@ -142,7 +139,7 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 			// Updating Trigger
 			if(!task.getSchedule().equals(oldTask.getSchedule())) {
 				Trigger newTrigger = this.getTrigger(task);
-				this.scheduler.rescheduleJob(this.getTriggerKey(task), newTrigger);
+				this.scheduler.rescheduleJob(this.schedulerUtils.getTriggerKey(task), newTrigger);
 			}
 		} catch (SchedulerException e) {
 			throw new IllegalArgumentException(INVALID_SCHEDULER_TRIGGER);
@@ -182,7 +179,7 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		}
 		
 		try {
-			Trigger trigger = this.scheduler.getTrigger(this.getTriggerKey(retval));
+			Trigger trigger = this.scheduler.getTrigger(this.schedulerUtils.getTriggerKey(retval));
 			retval.setNextRunTime(trigger.getNextFireTime());
 		} catch (SchedulerException e) {
 			log.warn("Unable to read trigger reference for task: " + retval.getName());
@@ -204,16 +201,16 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 
 	private Trigger getTrigger(TaskStatus task) {
 		Trigger retval = newTrigger()
-			.withIdentity(this.getTriggerKey(task))
+			.withIdentity(this.schedulerUtils.getTriggerKey(task))
 			.startNow()
 			.withSchedule(cronSchedule(task.getSchedule()))
-			.forJob(this.getJobKey(task))
+			.forJob(this.schedulerUtils.getJobKey(task))
 			.build();
 		return retval;
 	}
 	
 	@SuppressWarnings("unchecked")
-	private JobDetail getJobDetail(TaskStatus task) {
+	private JobDetail createJobDetail(TaskStatus task) {
 		Class<? extends Job> clazz = null;
 		try {
 			clazz = (Class<? extends Job>) Class.forName(task.getCanonicalName());
@@ -222,21 +219,7 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		}
 		
 		JobDataMap dataMap = new JobDataMap(task.getConfig());
-		JobDetail retval = newJob(clazz).withIdentity(this.getJobKey(task)).setJobData(dataMap).build();
-		return retval;
-	}
-	
-	private TriggerKey getTriggerKey(TaskStatus task) {
-		TriggerKey retval = new TriggerKey(this.getTriggerName(task), this.config.getQuartzGroupName());
-		return retval;
-	}
-	
-	private String getTriggerName(TaskStatus task) {
-		return String.format(TRIGGER_NAME_FORMAT, task.getName());
-	}
-	
-	private JobKey getJobKey(TaskStatus task) {
-		JobKey retval = new JobKey(task.getName(), this.config.getQuartzGroupName());
+		JobDetail retval = newJob(clazz).withIdentity(this.schedulerUtils.getJobKey(task)).setJobData(dataMap).build();
 		return retval;
 	}
 }
