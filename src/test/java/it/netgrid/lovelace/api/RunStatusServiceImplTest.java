@@ -57,20 +57,22 @@ public class RunStatusServiceImplTest {
 	public void testRunStatusCreationOnStart() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
 		RunStepStatus step = this.classUnderTest.start(task, "start");
-		
-		assertNotNull(step);
-		assertNotNull(step.getRunStatus());
-		assertNotNull(step.getRunStatus().getId());
-		
+	
 		task = this.taskStatusDao.queryForId((long)1);
 		TaskRunStatus runStatus = taskRunDao.queryForId(step.getRunStatus().getId());
 		
-		assertEquals(runStatus.getCreationDate(), step.getRunStatus().getCreationDate());
-		assertEquals(runStatus, task.getCurrentRun());
+		assertEquals(runStatus.getId(), task.getCurrentRun().getId());
 	}
 	
 	@Test
-	public void testRunStepStatusCreationOnStart() {
+	public void testRunStepStatusCreationOnStart() throws SQLException {
+		TaskStatus task = this.taskStatusDao.queryForId((long)1);
+		RunStepStatus step = this.classUnderTest.start(task, "start");
 		
+		RunStepStatus newStep = this.runStepDao.queryForId(step.getId());
+		
+		assertNotNull(newStep);
+		assertNotNull(newStep.getRunStatus());
+		assertNotNull(newStep.getRunStatus().getId());
 	}
 }

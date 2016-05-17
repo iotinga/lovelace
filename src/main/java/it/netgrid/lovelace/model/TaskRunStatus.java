@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -57,6 +58,7 @@ public class TaskRunStatus implements CrudObject<Long> {
 	@ForeignCollectionField(orderColumnName=RunStepStatus.ID_FIELD_NAME)
 	private ForeignCollection<RunStepStatus> runSteps;
 	
+	@OneToOne
 	@JoinColumn(name=CURRENT_RUN_STEP_ID_FIELD_NAME)
 	private RunStepStatus currentStep;
 	

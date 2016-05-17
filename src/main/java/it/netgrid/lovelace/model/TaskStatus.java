@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -64,12 +65,15 @@ public class TaskStatus implements CrudObject<Long> {
 	@Column(name=SCHEDULE_FIELD_NAME)
 	private String schedule;	
 	
+	@OneToOne
 	@JoinColumn(name=LAST_RUN_ID_FIELD_NAME)
 	private TaskRunStatus lastRun;
-	
+
+	@OneToOne
 	@JoinColumn(name=CURRENT_RUN_ID_FIELD_NAME)
 	private TaskRunStatus currentRun;
-	
+
+	@OneToOne
 	@JoinColumn(name=LAST_SUCCESS_RUN_ID_FIELD_NAME)
 	private TaskRunStatus lastSuccessRun;
 	
