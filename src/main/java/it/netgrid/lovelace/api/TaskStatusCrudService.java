@@ -131,6 +131,8 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		if(!task.getCanonicalName().equals(oldTask.getCanonicalName())) {
 			throw new IllegalArgumentException(INVALID_CANONICAL_NAME);
 		}
+
+		this.cronValidator.validate(task.getSchedule());
 		
 		int retval = 0;
 		try {

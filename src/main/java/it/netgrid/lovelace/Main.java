@@ -30,6 +30,9 @@ import it.netgrid.lovelace.quartz.GuiceJobFactory;
 import it.netgrid.lovelace.quartz.LovelaceSchedulerListener;
 import it.netgrid.lovelace.quartz.RunStatusJobListener;
 import it.netgrid.lovelace.quartz.RunStatusTriggerListener;
+import it.netgrid.lovelace.rest.IllegalArgumentExceptionMapper;
+import it.netgrid.lovelace.rest.NullPointerExceptionMapper;
+import it.netgrid.lovelace.rest.SQLExceptionMapper;
 
 public class Main {
 	
@@ -96,7 +99,7 @@ public class Main {
 			protected void configureServlets() {
 				install(new ModelModule());
 				install(new ApiModule());
-
+				
 				// Set init params for Jersey
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("com.sun.jersey.config.property.packages", RESOURCES_PACKAGES);
@@ -104,6 +107,9 @@ public class Main {
 
 				// Route all requests through GuiceContainer
 				serve("/*").with(GuiceContainer.class, params);
+				bind(SQLExceptionMapper.class);
+				bind(IllegalArgumentExceptionMapper.class);
+				bind(NullPointerExceptionMapper.class);
 			}
 			
 			@Provides

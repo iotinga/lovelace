@@ -90,11 +90,10 @@ public class TaskStatusResource {
 	@Path("{id}")
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})	
-	public TaskStatus deleteTask(@PathParam(value="id") Long id, TaskStatus task) throws IllegalArgumentException, SQLException {
-		task.setId(id);
-		this.taskStatusService.update(task);
-		TaskStatus retval = this.taskStatusService.read(task.getId());
-		return retval;
+	public TaskStatus deleteTask(@PathParam(value="id") Long id) throws IllegalArgumentException, SQLException {
+		TaskStatus task = this.taskStatusService.read(id);
+		this.taskStatusService.delete(task);
+		return task;
 	}
 
 	@POST
