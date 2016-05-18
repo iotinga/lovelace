@@ -21,6 +21,7 @@ public class PropertiesConfigurationImpl implements Configuration {
 	private static final String KEY_JDBC_PASSWORD = "jdbcPassword";
 	private static final String KEY_BIND_ADDRESS = "bindAddress";
 	private static final String KEY_BIND_PORT = "bindPort";
+	private static final String KEY_SYSTEM_ID = "systemId";
 	
 	private static final String DEFAULT_QUARTZ_GROUP_NAME = "global";
 	private static final String DEFAULT_JDBC_CONNECITON_URL = "jdbc:h2:mem:lovelace?zeroDateTimeBehavior=convertToNull";
@@ -28,6 +29,7 @@ public class PropertiesConfigurationImpl implements Configuration {
 	private static final String DEFAULT_JDBC_PASSWORD = "root";
 	private static final String DEFAULT_BIND_ADDRESS = "127.0.0.1";
 	private static final String DEFAULT_BIND_PORT = "9099";
+	private static final String DEFAULT_SYSTEM_ID = "1";
 	
 	private Properties properties;	
 	
@@ -121,5 +123,10 @@ public class PropertiesConfigurationImpl implements Configuration {
 	@Override
 	public String getQuartzGroupName() {
 		return DEFAULT_QUARTZ_GROUP_NAME;
+	}
+
+	@Override
+	public Long getSystemId() {
+		return Long.parseLong(this.getProperties().getProperty(KEY_SYSTEM_ID, DEFAULT_SYSTEM_ID));
 	}
 }

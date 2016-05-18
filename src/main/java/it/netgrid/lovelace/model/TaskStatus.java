@@ -1,9 +1,7 @@
 package it.netgrid.lovelace.model;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Column;
@@ -11,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
@@ -78,7 +75,7 @@ public class TaskStatus implements CrudObject<Long> {
 	@JoinColumn(name=LAST_SUCCESS_RUN_ID_FIELD_NAME)
 	private TaskRunStatus lastSuccessRun;
 	
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name=SYSYEM_ID_FIELD_NAME)
 	private SystemStatus systemStatus;
 	
@@ -86,13 +83,9 @@ public class TaskStatus implements CrudObject<Long> {
 	private ForeignCollection<TaskRunStatus> taskRuns;
 	
 	@Transient
-	private List<TaskRunStatus> runs;
-	
-	@Transient
 	private Date nextRunTime;
 
 	public TaskStatus() {
-		this.runs = new ArrayList<TaskRunStatus>();
 	}
 
 	@XmlElement(name="canonical_name")
@@ -220,14 +213,6 @@ public class TaskStatus implements CrudObject<Long> {
 
 	public void setTaskRuns(ForeignCollection<TaskRunStatus> taskRuns) {
 		this.taskRuns = taskRuns;
-	}
-
-	public List<TaskRunStatus> getRuns() {
-		return runs;
-	}
-
-	public void setRuns(List<TaskRunStatus> runs) {
-		this.runs = runs;
 	}
 
 }

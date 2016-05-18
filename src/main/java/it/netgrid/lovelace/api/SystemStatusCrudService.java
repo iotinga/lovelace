@@ -8,20 +8,23 @@ import com.google.inject.Inject;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 
+import it.netgrid.commons.data.CrudService;
 import it.netgrid.lovelace.model.SystemStatus;
 import it.netgrid.lovelace.model.TaskStatus;
 
 public class SystemStatusCrudService extends TemplateCrudService<SystemStatus, Long> {
 
 	public static final String INVALID_REQUEST = "not-allowed";
-	
-	public static final Long DEFAULT_SYSTEM_ID = (long)1;
 	private final Dao<SystemStatus, Long> systemStatusDao;
+	private final CrudService<TaskStatus, Long> taskStatusService;
 	
 	@Inject
-	public SystemStatusCrudService(ConnectionSource connection, Dao<SystemStatus, Long> systemStatusDao) {
+	public SystemStatusCrudService(ConnectionSource connection, 
+			Dao<SystemStatus, Long> systemStatusDao,
+			CrudService<TaskStatus, Long> taskStatusService) {
 		super(connection);
 		this.systemStatusDao = systemStatusDao;
+		this.taskStatusService = taskStatusService;
 	}
 
 	@Override
@@ -49,7 +52,8 @@ public class SystemStatusCrudService extends TemplateCrudService<SystemStatus, L
 		}
 		
 		for(TaskStatus task : retval.getTasksStatus()) {
-			retval.getTasks().add(task);
+			TaskStatus item = this.taskStatusService.read(task.getId());
+			retval.getTasks().add(item);
 		}
 		
 		return retval;

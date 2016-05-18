@@ -27,6 +27,7 @@ import com.j256.ormlite.support.ConnectionSource;
 
 import it.netgrid.commons.SerializableUtils;
 import it.netgrid.commons.data.CrudService;
+import it.netgrid.lovelace.Configuration;
 import it.netgrid.lovelace.model.SystemStatus;
 import it.netgrid.lovelace.model.TaskRunStatus;
 import it.netgrid.lovelace.model.TaskStatus;
@@ -42,39 +43,43 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 	public static final String INVALID_SCHEDULER_JOB_DETAILS = "scheduler/job_details";
 	public static final String INVALID_SCHEDULER_TRIGGER = "scheduler/trigger";
 	
+	private final Configuration config;
 	private final Scheduler scheduler;
 	private final SchedulerUtils schedulerUtils;
 	private final CronValidator cronValidator;
 	private final Dao<TaskStatus, Long> taskStatusDao;
 	private final Dao<TaskRunStatus, Long> taskRunStatusDao;
-	private final Dao<SystemStatus, Long> systemStatusDao;
+	private final CrudService<SystemStatus, Long> systemStatusService;
 	private final CrudService<TaskRunStatus, Long> taskRunStatusCrudService;
 	
 	@Inject
 	public TaskStatusCrudService(ConnectionSource connection, 
 			SchedulerUtils schedulerUtils,
+			Configuration config,
 			Scheduler scheduler, 
 			CronValidator cronValidator,
-			Dao<SystemStatus, Long> systemStatusDao,
 			Dao<TaskStatus, Long> taskStatusDao,
 			Dao<TaskRunStatus, Long> taskRunStatusDao,
-			CrudService<TaskRunStatus, Long> taskRunStatusCrudService) {
+			CrudService<TaskRunStatus, Long> taskRunStatusCrudService,
+			CrudService<SystemStatus, Long> systemStatusService) {
 		super(connection);
+		this.config = config;
 		this.scheduler = scheduler;
 		this.schedulerUtils = schedulerUtils;
-		this.systemStatusDao = systemStatusDao;
 		this.cronValidator = cronValidator;
 		this.taskStatusDao = taskStatusDao;
 		this.taskRunStatusDao = taskRunStatusDao;
 		this.taskRunStatusCrudService = taskRunStatusCrudService;
+		this.systemStatusService = systemStatusService;
 	}
 
 	@Override
 	public int createRaw(TaskStatus task) throws SQLException, IllegalArgumentException {
 		Validate.notBlank(task.getName());
-		SystemStatus system = this.systemStatusDao.queryForId(SystemStatusCrudService.DEFAULT_SYSTEM_ID);
 		this.cronValidator.validate(task.getSchedule());
 		
+		SystemStatus system = this.systemStatusService.read(this.config.getSystemId());
+		task.setSystemStatus(system);
 		task.setCreation(new Date());
 		task.setMarshalledConfig(this.getConfigString(task.getConfig()));
 		task.setUpdated(task.getCreation());

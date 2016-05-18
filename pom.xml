@@ -120,6 +120,12 @@
 			<artifactId>h2</artifactId>
 			<version>1.4.187</version>
 		</dependency>
+		
+		<!--<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.35</version>
+		</dependency>-->
 
 		<!-- Testing dependencies: -->
 		<dependency>

@@ -11,24 +11,26 @@ import javax.ws.rs.core.MediaType;
 import com.google.inject.Inject;
 
 import it.netgrid.commons.data.CrudService;
-import it.netgrid.lovelace.api.SystemStatusCrudService;
+import it.netgrid.lovelace.Configuration;
 import it.netgrid.lovelace.model.SystemStatus;
 
 @Path("/")
 public class SystemStatusResource {
 	
+	private final Configuration config;
 	private final CrudService<SystemStatus, Long> systemStatusService;
 	
 	@Inject
-	public SystemStatusResource(CrudService<SystemStatus, Long> systemStatusService) {
+	public SystemStatusResource(CrudService<SystemStatus, Long> systemStatusService, Configuration config) {
 		this.systemStatusService = systemStatusService;
+		this.config = config;
 	}
 	
 	@GET
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})	
 	public SystemStatus get() throws IllegalArgumentException, SQLException {
-		return this.systemStatusService.read(SystemStatusCrudService.DEFAULT_SYSTEM_ID);
+		return this.systemStatusService.read(this.config.getSystemId());
 	}
 	
 	

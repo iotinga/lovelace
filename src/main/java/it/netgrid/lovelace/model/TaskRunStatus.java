@@ -105,7 +105,6 @@ public class TaskRunStatus implements CrudObject<Long> {
 		this.endDate = endDate;
 	}
 
-	
 	public RunState getState() {
 		return state;
 	}
@@ -122,6 +121,7 @@ public class TaskRunStatus implements CrudObject<Long> {
 		this.result = result;
 	}
 
+	@XmlTransient
 	public TaskStatus getTask() {
 		return task;
 	}
