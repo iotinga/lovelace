@@ -2,6 +2,7 @@ package it.netgrid.lovelace.model;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -131,6 +132,9 @@ public class TaskStatus implements CrudObject<Long> {
 	public Map<String, String> getConfig() {
 		if(this.config == null && this.marshalledConfig != null) {
 			this.config = (Map<String, String>) SerializableUtils.deserializeBase64(this.marshalledConfig);
+		}
+		if(this.config == null) {
+			this.config = new HashMap<String, String>();
 		}
 		return config;
 	}

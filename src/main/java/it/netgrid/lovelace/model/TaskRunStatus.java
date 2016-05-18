@@ -14,6 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.ForeignCollectionField;
@@ -146,6 +147,7 @@ public class TaskRunStatus implements CrudObject<Long> {
 		this.reason = reason;
 	}
 
+	@XmlTransient
 	public ForeignCollection<RunStepStatus> getRunSteps() {
 		return runSteps;
 	}

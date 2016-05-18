@@ -49,7 +49,7 @@ public class TaskStatusResource {
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})	
 	public TaskStatus createTask(TaskStatus task) throws IllegalArgumentException, SQLException {
-		this.taskStatusService.update(task);
+		this.taskStatusService.create(task);
 		TaskStatus retval = this.taskStatusService.read(task.getId());
 		return retval;
 	}
