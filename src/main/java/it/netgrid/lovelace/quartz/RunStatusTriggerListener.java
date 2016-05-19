@@ -12,7 +12,6 @@ import com.google.inject.Singleton;
 import com.j256.ormlite.dao.Dao;
 
 import it.netgrid.commons.data.CrudService;
-import it.netgrid.lovelace.model.ExecutionReason;
 import it.netgrid.lovelace.model.ExecutionResult;
 import it.netgrid.lovelace.model.ExecutionState;
 import it.netgrid.lovelace.model.RunStatus;
@@ -85,7 +84,6 @@ public class RunStatusTriggerListener implements TriggerListener {
 		RunStatus retval = new RunStatus();
 		retval.setStartDate(null);
 		retval.setState(ExecutionState.END);
-		retval.setReason(ExecutionReason.SYSTEM);
 		retval.setResult(ExecutionResult.ABORT);
 		retval.setTaskStatus(task);
 		return retval;

@@ -70,7 +70,7 @@ public class StepServiceImpl implements StepService {
 					task.setCurrentRun(runStatus);
 					taskStatusService.updateRaw(task);
 					
-					StepStatus stepStatus = buildRunStepStatus(runStatus, firstStepName);
+					StepStatus stepStatus = buildStepStatus(runStatus, firstStepName);
 					stepStatusService.createRaw(stepStatus);
 					
 					runStatus.setCurrentStep(stepStatus);
@@ -100,7 +100,7 @@ public class StepServiceImpl implements StepService {
 					RunStatus runStatus = task.getCurrentRun();
 					StepStatus oldStepStatus = getCurrentStep(runStatus);
 					end(oldStepStatus, currentStepResult);
-					StepStatus stepStatus = buildRunStepStatus(runStatus, nextStepName);
+					StepStatus stepStatus = buildStepStatus(runStatus, nextStepName);
 					stepStatusService.createRaw(stepStatus);
 					runStatus.setCurrentStep(stepStatus);
 					runStatusService.updateRaw(runStatus);
@@ -131,6 +131,7 @@ public class StepServiceImpl implements StepService {
 					run.setEndDate(new Date());
 					run.setResult(taskResult);
 					run.setState(ExecutionState.END);
+					run.setCurrentStep(null);
 					runStatusService.updateRaw(run);
 					
 					task.setLastRun(run);
@@ -163,13 +164,14 @@ public class StepServiceImpl implements StepService {
 	}
 	
 	private void end(StepStatus step, ExecutionResult result) throws IllegalArgumentException, SQLException {
+		this.stepStatusDao.refresh(step);
 		step.setEndTime(new Date());
 		step.setState(ExecutionState.END);
 		step.setResult(result);
 		this.stepStatusService.updateRaw(step);
 	}
 	
-	private StepStatus buildRunStepStatus(RunStatus runStatus, String stepName) {
+	private StepStatus buildStepStatus(RunStatus runStatus, String stepName) {
 		StepStatus runStep = new StepStatus();
 		runStep.setName(stepName);
 		runStep.setRunStatus(runStatus);

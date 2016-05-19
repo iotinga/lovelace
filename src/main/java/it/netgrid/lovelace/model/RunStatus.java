@@ -34,24 +34,26 @@ public class RunStatus implements CrudObject<Long> {
 	public static final String TOTAL_STEPS_COUNT_FIELD_NAME = "run_total_steps_count";
 	public static final String TASK_STATUS_ID_FIELD_NAME = "run_tsk_id";
 	public static final String CURRENT_STEP_ID_FIELD_NAME = "run_stp_id";
-	public static final String EXECUTION_REASON_FIELD_NAME = "run_execution_reason";
 	
 	@Id
 	@GeneratedValue
 	@Column(name=ID_FIELD_NAME)
 	private Long id;
+	
 	@Column(name=CREATION_DATE_FIELD_NAME)
 	private Date creationDate;
+	
 	@Column(name=START_DATE_FIELD_NAME)
 	private Date startDate;
+	
 	@Column(name=END_DATE_FIELD_NAME)
 	private Date endDate;
+	
 	@Column(name=EXECUTION_STATE_FIELD_NAME)
 	private ExecutionState state;
+	
 	@Column(name=EXECUTION_RESULT_FIELD_NAME)
 	private ExecutionResult result;
-	@Column(name=EXECUTION_REASON_FIELD_NAME)
-	private ExecutionReason reason;
 	
 	@ManyToOne
 	@JoinColumn(name=TASK_STATUS_ID_FIELD_NAME)
@@ -141,14 +143,6 @@ public class RunStatus implements CrudObject<Long> {
 
 	public void setCurrentStep(StepStatus currentStep) {
 		this.currentStep = currentStep;
-	}
-
-	public ExecutionReason getReason() {
-		return reason;
-	}
-
-	public void setReason(ExecutionReason reason) {
-		this.reason = reason;
 	}
 
 	@XmlTransient

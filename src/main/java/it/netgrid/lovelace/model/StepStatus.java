@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -43,7 +43,7 @@ public class StepStatus implements CrudObject<Long> {
 	@Column(name=EXECUTION_RESULT_FIELD_NAME)
 	private ExecutionResult result;
 	
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name=RUN_STATUS_ID_FIELD_NAME)
 	private RunStatus runStatus;
 	

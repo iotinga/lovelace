@@ -48,7 +48,6 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 	private final SchedulerUtils schedulerUtils;
 	private final CronValidator cronValidator;
 	private final Dao<TaskStatus, Long> taskStatusDao;
-	private final Dao<RunStatus, Long> runStatusDao;
 	private final CrudService<SchedulerStatus, Long> schedulerStatusService;
 	private final CrudService<RunStatus, Long> runStatusService;
 	
@@ -59,7 +58,6 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 			Scheduler scheduler, 
 			CronValidator cronValidator,
 			Dao<TaskStatus, Long> taskStatusDao,
-			Dao<RunStatus, Long> runStatusDao,
 			CrudService<RunStatus, Long> runStatusService,
 			CrudService<SchedulerStatus, Long> schedulerStatusService) {
 		super(connection);
@@ -68,7 +66,6 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		this.schedulerUtils = schedulerUtils;
 		this.cronValidator = cronValidator;
 		this.taskStatusDao = taskStatusDao;
-		this.runStatusDao = runStatusDao;
 		this.runStatusService = runStatusService;
 		this.schedulerStatusService = schedulerStatusService;
 	}
@@ -135,17 +132,20 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		this.cronValidator.validate(task.getSchedule());
 		
 		int retval = 0;
+		
 		try {
-			// Updating Job Details
-			JobDetail jobDetail = this.scheduler.getJobDetail(this.schedulerUtils.getJobKey(task));
-			jobDetail.getJobDataMap().clear();
-			jobDetail.getJobDataMap().putAll(task.getConfig());
-			Set<Trigger> triggers = new HashSet<Trigger>(this.scheduler.getTriggersOfJob(this.schedulerUtils.getJobKey(task)));
-			this.scheduler.scheduleJob(jobDetail, triggers, true);
+			if(!oldTask.getConfig().equals(task.getConfig())) {
+				// Updating Job Details
+				JobDetail jobDetail = this.scheduler.getJobDetail(this.schedulerUtils.getJobKey(task));
+				jobDetail.getJobDataMap().clear();
+				jobDetail.getJobDataMap().putAll(task.getConfig());
+				Set<Trigger> triggers = new HashSet<Trigger>(this.scheduler.getTriggersOfJob(this.schedulerUtils.getJobKey(task)));
+				this.scheduler.scheduleJob(jobDetail, triggers, true);
+			}
 		} catch (SchedulerException e) {
 			throw new IllegalArgumentException(INVALID_SCHEDULER_JOB_DETAILS);
 		}
-
+		
 		try {
 			// Updating Trigger
 			if(!task.getSchedule().equals(oldTask.getSchedule())) {
@@ -178,15 +178,18 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		retval.setConfig(this.getConfigMap(retval.getMarshalledConfig()));
 		
 		if(retval.getCurrentRun() != null) {
-			this.runStatusDao.refresh(retval.getCurrentRun());
+			RunStatus run = this.runStatusService.read(retval.getCurrentRun().getId());
+			retval.setCurrentRun(run);
 		}
 		
 		if(retval.getLastRun() != null) {
-			this.runStatusDao.refresh(retval.getLastRun());
+			RunStatus run = this.runStatusService.read(retval.getLastRun().getId());
+			retval.setLastRun(run);
 		}
 		
 		if(retval.getLastSuccessRun() != null) {
-			this.runStatusDao.refresh(retval.getLastSuccessRun());
+			RunStatus run = this.runStatusService.read(retval.getLastSuccessRun().getId());
+			retval.setLastSuccessRun(run);
 		}
 		
 		try {

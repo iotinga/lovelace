@@ -16,11 +16,15 @@ public class RunStatusCrudService extends TemplateCrudService<RunStatus, Long> {
 
 	public static final String INVALID_TASK = "task";
 	private final Dao<RunStatus, Long> runStatusDao;
+	private final Dao<StepStatus, Long> stepStatusDao;
 	
 	@Inject
-	public RunStatusCrudService(ConnectionSource connection, Dao<RunStatus, Long> runStatusDao) {
+	public RunStatusCrudService(ConnectionSource connection, 
+			Dao<RunStatus, Long> runStatusDao,
+			Dao<StepStatus, Long> stepStatusDao) {
 		super(connection);
 		this.runStatusDao = runStatusDao;
+		this.stepStatusDao = stepStatusDao;
 	}
 
 	@Override
@@ -44,6 +48,7 @@ public class RunStatusCrudService extends TemplateCrudService<RunStatus, Long> {
 	public RunStatus read(Long key) throws SQLException {
 		RunStatus retval = this.runStatusDao.queryForId(key);
 		for(StepStatus step : retval.getStepsStatus()) {
+			stepStatusDao.refresh(step);
 			retval.getSteps().add(step);
 		}
 		return retval;
