@@ -1,6 +1,6 @@
 package it.netgrid.lovelace.model;
 
-public enum RunReason {
+public enum ExecutionReason {
 	USER,
 	SYSTEM
 }

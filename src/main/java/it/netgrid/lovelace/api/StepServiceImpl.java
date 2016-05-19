@@ -17,33 +17,33 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 
 import it.netgrid.commons.data.CrudService;
-import it.netgrid.lovelace.model.RunResult;
-import it.netgrid.lovelace.model.RunState;
-import it.netgrid.lovelace.model.RunStepStatus;
-import it.netgrid.lovelace.model.TaskRunStatus;
+import it.netgrid.lovelace.model.ExecutionResult;
+import it.netgrid.lovelace.model.ExecutionState;
+import it.netgrid.lovelace.model.StepStatus;
+import it.netgrid.lovelace.model.RunStatus;
 import it.netgrid.lovelace.model.TaskStatus;
 
 @Singleton
-public class RunStatusServiceImpl implements RunStatusService {
+public class StepServiceImpl implements StepService {
 
-	private static final Logger log = LoggerFactory.getLogger(RunStatusServiceImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(StepServiceImpl.class);
 	
-	private final CrudService<RunStepStatus, Long> runStepCrudService;
-	private final Dao<TaskRunStatus, Long> taskRunStatusDao;
-	private final Dao<RunStepStatus, Long> runStepDao;
+	private final CrudService<StepStatus, Long> runStepCrudService;
+	private final Dao<RunStatus, Long> taskRunStatusDao;
+	private final Dao<StepStatus, Long> runStepDao;
 	private final ConnectionSource connection;
-	private final CrudService<TaskRunStatus, Long> taskRunStatusCrudService;
+	private final CrudService<RunStatus, Long> taskRunStatusCrudService;
 	private final CrudService<TaskStatus, Long> taskStatusCrudService;
 	private final Dao<TaskStatus, Long> taskStatusDao;
 	
 	@Inject
-	public RunStatusServiceImpl(
+	public StepServiceImpl(
 			Dao<TaskStatus, Long> taskStatusDao,
 			ConnectionSource connection,
-			Dao<TaskRunStatus, Long> taskRunStatusDao,
-			Dao<RunStepStatus, Long> runStepDao,
-			CrudService<RunStepStatus, Long> runStepCrudService, 
-			CrudService<TaskRunStatus, Long> taskRunStatusCrudService, 
+			Dao<RunStatus, Long> taskRunStatusDao,
+			Dao<StepStatus, Long> runStepDao,
+			CrudService<StepStatus, Long> runStepCrudService, 
+			CrudService<RunStatus, Long> taskRunStatusCrudService, 
 			CrudService<TaskStatus, Long> taskStatusCrudService) {
 		this.taskStatusDao = taskStatusDao;
 		this.runStepCrudService = runStepCrudService;
@@ -55,14 +55,14 @@ public class RunStatusServiceImpl implements RunStatusService {
 	}
 	
 	@Override
-	public RunStepStatus start(final TaskStatus task, final String firstStepName, final int totalStepsCount) {
-		RunStepStatus runStatus = null;
+	public StepStatus start(final TaskStatus task, final String firstStepName, final int totalStepsCount) {
+		StepStatus runStatus = null;
 		try {
-			runStatus = TransactionManager.callInTransaction(connection, new Callable<RunStepStatus>() {
+			runStatus = TransactionManager.callInTransaction(connection, new Callable<StepStatus>() {
 
 				@Override
-				public RunStepStatus call() throws Exception {
-					TaskRunStatus runStatus = buildRunStatus(task);
+				public StepStatus call() throws Exception {
+					RunStatus runStatus = buildRunStatus(task);
 					runStatus.setTotalStepsCount(totalStepsCount);
 
 					taskRunStatusCrudService.createRaw(runStatus);
@@ -70,7 +70,7 @@ public class RunStatusServiceImpl implements RunStatusService {
 					task.setCurrentRun(runStatus);
 					taskStatusCrudService.updateRaw(task);
 					
-					RunStepStatus stepStatus = buildRunStepStatus(runStatus, firstStepName);
+					StepStatus stepStatus = buildRunStepStatus(runStatus, firstStepName);
 					runStepCrudService.createRaw(stepStatus);
 					
 					runStatus.setCurrentStep(stepStatus);
@@ -89,18 +89,18 @@ public class RunStatusServiceImpl implements RunStatusService {
 	}
 
 	@Override
-	public RunStepStatus nextStep(TaskStatus task, RunResult currentStepResult, String nextStepName) {
-		RunStepStatus runStatus = null;
+	public StepStatus nextStep(TaskStatus task, ExecutionResult currentStepResult, String nextStepName) {
+		StepStatus runStatus = null;
 		try {
-			runStatus = TransactionManager.callInTransaction(connection, new Callable<RunStepStatus>() {
+			runStatus = TransactionManager.callInTransaction(connection, new Callable<StepStatus>() {
 
 				@Override
-				public RunStepStatus call() throws Exception {
+				public StepStatus call() throws Exception {
 					taskRunStatusDao.refresh(task.getCurrentRun());
-					TaskRunStatus runStatus = task.getCurrentRun();
-					RunStepStatus oldStepStatus = getCurrentStep(runStatus);
+					RunStatus runStatus = task.getCurrentRun();
+					StepStatus oldStepStatus = getCurrentStep(runStatus);
 					end(oldStepStatus, currentStepResult);
-					RunStepStatus stepStatus = buildRunStepStatus(runStatus, nextStepName);
+					StepStatus stepStatus = buildRunStepStatus(runStatus, nextStepName);
 					runStepCrudService.createRaw(stepStatus);
 					runStatus.setCurrentStep(stepStatus);
 					taskRunStatusCrudService.updateRaw(runStatus);
@@ -117,25 +117,25 @@ public class RunStatusServiceImpl implements RunStatusService {
 	}
 
 	@Override
-	public RunStepStatus end(final TaskStatus task, final RunResult currentStepResult, final RunResult taskResult) {
-		RunStepStatus runStatus = null;
+	public StepStatus end(final TaskStatus task, final ExecutionResult currentStepResult, final ExecutionResult taskResult) {
+		StepStatus runStatus = null;
 		try {
-			runStatus = TransactionManager.callInTransaction(connection, new Callable<RunStepStatus>() {
+			runStatus = TransactionManager.callInTransaction(connection, new Callable<StepStatus>() {
 
 				@Override
-				public RunStepStatus call() throws Exception {
+				public StepStatus call() throws Exception {
 					taskRunStatusDao.refresh(task.getCurrentRun());
-					TaskRunStatus taskRun = task.getCurrentRun();
-					RunStepStatus stepStatus = getCurrentStep(taskRun); 
+					RunStatus taskRun = task.getCurrentRun();
+					StepStatus stepStatus = getCurrentStep(taskRun); 
 					end(stepStatus, currentStepResult);
 					taskRun.setEndDate(new Date());
 					taskRun.setResult(taskResult);
-					taskRun.setState(RunState.END);
+					taskRun.setState(ExecutionState.END);
 					taskRunStatusCrudService.updateRaw(taskRun);
 					
 					task.setLastRun(taskRun);
 					task.setCurrentRun(null);
-					if(taskResult == RunResult.SUCCESS) {
+					if(taskResult == ExecutionResult.SUCCESS) {
 						task.setLastSuccessRun(taskRun);
 					}
 					taskStatusCrudService.updateRaw(task);
@@ -150,11 +150,11 @@ public class RunStatusServiceImpl implements RunStatusService {
 		return runStatus;
 	}
 	
-	private RunStepStatus getCurrentStep(TaskRunStatus runStatus) {
-		QueryBuilder<RunStepStatus, Long> query = this.runStepDao.queryBuilder();
+	private StepStatus getCurrentStep(RunStatus runStatus) {
+		QueryBuilder<StepStatus, Long> query = this.runStepDao.queryBuilder();
 		try {
-			query.where().eq(RunStepStatus.TASK_RUN_STATUS_ID_FIELD_NAME, runStatus.getId());
-			List<RunStepStatus> runSteps = query.orderBy(RunStepStatus.START_TIME_FIELD_NAME, false).query();
+			query.where().eq(StepStatus.RUN_STATUS_ID_FIELD_NAME, runStatus.getId());
+			List<StepStatus> runSteps = query.orderBy(StepStatus.START_TIME_FIELD_NAME, false).query();
 			if(runSteps.isEmpty()) return null;
 			return runSteps.get(0);
 		} catch (SQLException e) {
@@ -162,32 +162,32 @@ public class RunStatusServiceImpl implements RunStatusService {
 		}
 	}
 	
-	private void end(RunStepStatus step, RunResult result) throws IllegalArgumentException, SQLException {
+	private void end(StepStatus step, ExecutionResult result) throws IllegalArgumentException, SQLException {
 		step.setEndTime(new Date());
-		step.setStatus(RunState.END);
+		step.setState(ExecutionState.END);
 		step.setResult(result);
 		this.runStepCrudService.updateRaw(step);
 	}
 	
-	private RunStepStatus buildRunStepStatus(TaskRunStatus runStatus, String stepName) {
-		RunStepStatus runStep = new RunStepStatus();
+	private StepStatus buildRunStepStatus(RunStatus runStatus, String stepName) {
+		StepStatus runStep = new StepStatus();
 		runStep.setName(stepName);
 		runStep.setRunStatus(runStatus);
 		runStep.setStartTime(new Date());
-		runStep.setStatus(RunState.RUN);
+		runStep.setState(ExecutionState.RUN);
 		return runStep;
 	}
 	
-	private TaskRunStatus buildRunStatus(TaskStatus task) {
-		TaskRunStatus retval = new TaskRunStatus();
+	private RunStatus buildRunStatus(TaskStatus task) {
+		RunStatus retval = new RunStatus();
 		retval.setStartDate(new Date());
-		retval.setState(RunState.RUN);
-		retval.setTask(task);
+		retval.setState(ExecutionState.RUN);
+		retval.setTaskStatus(task);
 		return retval;
 	}
 
 	@Override
-	public RunStepStatus nextStep(JobExecutionContext context, RunResult currentStepResult, String nextStepName) {
+	public StepStatus nextStep(JobExecutionContext context, ExecutionResult currentStepResult, String nextStepName) {
 		TaskStatus task = this.getTaskStatus(context);
 		return this.nextStep(task, currentStepResult, nextStepName);
 	}

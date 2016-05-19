@@ -12,16 +12,16 @@ import com.google.inject.Inject;
 
 import it.netgrid.commons.data.CrudService;
 import it.netgrid.lovelace.Configuration;
-import it.netgrid.lovelace.model.SystemStatus;
+import it.netgrid.lovelace.model.SchedulerStatus;
 
 @Path("/")
 public class SystemStatusResource {
 	
 	private final Configuration config;
-	private final CrudService<SystemStatus, Long> systemStatusService;
+	private final CrudService<SchedulerStatus, Long> systemStatusService;
 	
 	@Inject
-	public SystemStatusResource(CrudService<SystemStatus, Long> systemStatusService, Configuration config) {
+	public SystemStatusResource(CrudService<SchedulerStatus, Long> systemStatusService, Configuration config) {
 		this.systemStatusService = systemStatusService;
 		this.config = config;
 	}
@@ -29,7 +29,7 @@ public class SystemStatusResource {
 	@GET
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})	
-	public SystemStatus get() throws IllegalArgumentException, SQLException {
+	public SchedulerStatus get() throws IllegalArgumentException, SQLException {
 		return this.systemStatusService.read(this.config.getSystemId());
 	}
 	

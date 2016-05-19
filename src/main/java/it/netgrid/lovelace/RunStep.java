@@ -1,9 +1,9 @@
 package it.netgrid.lovelace;
 
-import it.netgrid.lovelace.model.RunStepStatus;
+import it.netgrid.lovelace.model.StepStatus;
 
 public interface RunStep extends Runnable {
 	
-	public RunStepStatus getStatus();
+	public StepStatus getStatus();
 	
 }

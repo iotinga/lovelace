@@ -1,6 +1,6 @@
 package it.netgrid.lovelace.model;
 
-public enum RunState {
+public enum ExecutionState {
 	UNKNOWN,
 	INITIALIZING,
 	RUN,

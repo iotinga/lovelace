@@ -8,17 +8,17 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import it.netgrid.lovelace.Task;
-import it.netgrid.lovelace.api.RunStatusService;
-import it.netgrid.lovelace.model.RunResult;
+import it.netgrid.lovelace.api.StepService;
+import it.netgrid.lovelace.model.ExecutionResult;
 import it.netgrid.lovelace.model.TaskStatus;
 
 @Singleton
 public class RunStatusJobListener implements JobListener {
 	
-	private final RunStatusService service;
+	private final StepService service;
 
 	@Inject
-	public RunStatusJobListener(RunStatusService service) {
+	public RunStatusJobListener(StepService service) {
 		this.service = service;
 	}
 	
@@ -39,13 +39,13 @@ public class RunStatusJobListener implements JobListener {
 		TaskStatus status = this.service.getTaskStatus(context);
 		Task task = (Task)context.getJobInstance();
 		this.service.start(status, task.getFirstStepName(), task.getStepsCount());
-		this.service.end(status, RunResult.ABORT, RunResult.ABORT);
+		this.service.end(status, ExecutionResult.ABORT, ExecutionResult.ABORT);
 	}
 
 	@Override
 	public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
 		TaskStatus task = this.service.getTaskStatus(context);
-		RunResult result = jobException == null ? RunResult.SUCCESS : RunResult.ERROR;
+		ExecutionResult result = jobException == null ? ExecutionResult.SUCCESS : ExecutionResult.ERROR;
 		this.service.end(task, result, result);
 	}
 }

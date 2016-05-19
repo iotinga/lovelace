@@ -22,19 +22,19 @@ import com.j256.ormlite.field.ForeignCollectionField;
 import it.netgrid.commons.data.CrudObject;
 
 @XmlRootElement
-@Entity(name="task_run_status")
-public class TaskRunStatus implements CrudObject<Long> {
+@Entity(name="run_status")
+public class RunStatus implements CrudObject<Long> {
 
-	public static final String ID_FIELD_NAME = "trs_id";
-	public static final String CREATION_DATE_FIELD_NAME = "trs_creation_date";
-	public static final String START_DATE_FIELD_NAME = "trs_start_date";
-	public static final String END_DATE_FIELD_NAME = "trs_end_date";
-	public static final String RUN_STATE_FIELD_NAME = "trs_run_state";
-	public static final String RUN_RESULT_FIELD_NAME = "trs_run_result";
-	public static final String TOTAL_STEPS_COUNT_FIELD_NAME = "trs_total_steps_count";
-	public static final String TASK_ID_FIELD_NAME = "trs_tst_id";
-	public static final String CURRENT_RUN_STEP_ID_FIELD_NAME = "trs_tss_id";
-	public static final String RUN_REASON_FIELD_NAME = "trs_run_reason";
+	public static final String ID_FIELD_NAME = "run_id";
+	public static final String CREATION_DATE_FIELD_NAME = "run_creation_date";
+	public static final String START_DATE_FIELD_NAME = "run_start_date";
+	public static final String END_DATE_FIELD_NAME = "run_end_date";
+	public static final String EXECUTION_STATE_FIELD_NAME = "run_execution_state";
+	public static final String EXECUTION_RESULT_FIELD_NAME = "run_execution_result";
+	public static final String TOTAL_STEPS_COUNT_FIELD_NAME = "run_total_steps_count";
+	public static final String TASK_STATUS_ID_FIELD_NAME = "run_tsk_id";
+	public static final String CURRENT_STEP_ID_FIELD_NAME = "run_stp_id";
+	public static final String EXECUTION_REASON_FIELD_NAME = "run_execution_reason";
 	
 	@Id
 	@GeneratedValue
@@ -46,32 +46,32 @@ public class TaskRunStatus implements CrudObject<Long> {
 	private Date startDate;
 	@Column(name=END_DATE_FIELD_NAME)
 	private Date endDate;
-	@Column(name=RUN_STATE_FIELD_NAME)
-	private RunState state;
-	@Column(name=RUN_RESULT_FIELD_NAME)
-	private RunResult result;
-	@Column(name=RUN_REASON_FIELD_NAME)
-	private RunReason reason;
+	@Column(name=EXECUTION_STATE_FIELD_NAME)
+	private ExecutionState state;
+	@Column(name=EXECUTION_RESULT_FIELD_NAME)
+	private ExecutionResult result;
+	@Column(name=EXECUTION_REASON_FIELD_NAME)
+	private ExecutionReason reason;
 	
 	@ManyToOne
-	@JoinColumn(name=TASK_ID_FIELD_NAME)
-	private TaskStatus task;
+	@JoinColumn(name=TASK_STATUS_ID_FIELD_NAME)
+	private TaskStatus taskStatus;
 	
-	@ForeignCollectionField(orderColumnName=RunStepStatus.ID_FIELD_NAME)
-	private ForeignCollection<RunStepStatus> runSteps;
+	@ForeignCollectionField(orderColumnName=StepStatus.ID_FIELD_NAME)
+	private ForeignCollection<StepStatus> stepsStatus;
 	
 	@OneToOne
-	@JoinColumn(name=CURRENT_RUN_STEP_ID_FIELD_NAME)
-	private RunStepStatus currentStep;
+	@JoinColumn(name=CURRENT_STEP_ID_FIELD_NAME)
+	private StepStatus currentStep;
 	
 	@Transient
-	private List<RunStepStatus> steps;
+	private List<StepStatus> steps;
 	
 	@Column(name=TOTAL_STEPS_COUNT_FIELD_NAME)
 	private int totalStepsCount;
 	
-	public TaskRunStatus() {
-		this.steps = new ArrayList<RunStepStatus>();
+	public RunStatus() {
+		this.steps = new ArrayList<StepStatus>();
 	}
 
 	public Long getId() {
@@ -109,62 +109,62 @@ public class TaskRunStatus implements CrudObject<Long> {
 		this.endDate = endDate;
 	}
 
-	public RunState getState() {
+	public ExecutionState getState() {
 		return state;
 	}
 
-	public void setState(RunState state) {
+	public void setState(ExecutionState state) {
 		this.state = state;
 	}
 
-	public RunResult getResult() {
+	public ExecutionResult getResult() {
 		return result;
 	}
 
-	public void setResult(RunResult result) {
+	public void setResult(ExecutionResult result) {
 		this.result = result;
 	}
 
 	@XmlTransient
-	public TaskStatus getTask() {
-		return task;
+	public TaskStatus getTaskStatus() {
+		return taskStatus;
 	}
 
-	public void setTask(TaskStatus task) {
-		this.task = task;
+	public void setTaskStatus(TaskStatus taskStatus) {
+		this.taskStatus = taskStatus;
 	}
 
 	@XmlElement(name="current_step")
-	public RunStepStatus getCurrentStep() {
+	public StepStatus getCurrentStep() {
 		return currentStep;
 	}
 
-	public void setCurrentStep(RunStepStatus currentStep) {
+	public void setCurrentStep(StepStatus currentStep) {
 		this.currentStep = currentStep;
 	}
 
-	public RunReason getReason() {
+	public ExecutionReason getReason() {
 		return reason;
 	}
 
-	public void setReason(RunReason reason) {
+	public void setReason(ExecutionReason reason) {
 		this.reason = reason;
 	}
 
 	@XmlTransient
-	public ForeignCollection<RunStepStatus> getRunSteps() {
-		return runSteps;
+	public ForeignCollection<StepStatus> getStepsStatus() {
+		return stepsStatus;
 	}
 
-	public void setRunSteps(ForeignCollection<RunStepStatus> runSteps) {
-		this.runSteps = runSteps;
+	public void setStepsStatus(ForeignCollection<StepStatus> stepsStatus) {
+		this.stepsStatus = stepsStatus;
 	}
 
-	public List<RunStepStatus> getSteps() {
+	public List<StepStatus> getSteps() {
 		return steps;
 	}
 
-	public void setSteps(List<RunStepStatus> steps) {
+	public void setSteps(List<StepStatus> steps) {
 		this.steps = steps;
 	}
 

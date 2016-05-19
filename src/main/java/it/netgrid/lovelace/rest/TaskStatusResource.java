@@ -18,9 +18,9 @@ import com.google.inject.Inject;
 
 import it.netgrid.commons.data.CrudService;
 import it.netgrid.lovelace.Configuration;
-import it.netgrid.lovelace.model.RunStepStatus;
-import it.netgrid.lovelace.model.SystemStatus;
-import it.netgrid.lovelace.model.TaskRunStatus;
+import it.netgrid.lovelace.model.StepStatus;
+import it.netgrid.lovelace.model.SchedulerStatus;
+import it.netgrid.lovelace.model.RunStatus;
 import it.netgrid.lovelace.model.TaskStatus;
 import it.netgrid.lovelace.quartz.SchedulerUtils;
 
@@ -29,19 +29,19 @@ public class TaskStatusResource {
 
 	public static final String INVALID_TASK = "task/id";
 	
-	private final CrudService<SystemStatus, Long> systemStatusService;
+	private final CrudService<SchedulerStatus, Long> systemStatusService;
 	private final CrudService<TaskStatus, Long> taskStatusService;
-	private final CrudService<TaskRunStatus, Long> taskRunStatusService;
+	private final CrudService<RunStatus, Long> taskRunStatusService;
 	private final SchedulerUtils schedulerUtils;
 	private final Configuration config;
 	
 	@Inject
 	public TaskStatusResource(
 			Configuration config,
-			CrudService<SystemStatus, Long> systemStatusService,
+			CrudService<SchedulerStatus, Long> systemStatusService,
 			CrudService<TaskStatus, Long> taskStatusService,
 			SchedulerUtils schedulerUtils,
-			CrudService<TaskRunStatus, Long> taskRunStatusService) {
+			CrudService<RunStatus, Long> taskRunStatusService) {
 		this.systemStatusService = systemStatusService;
 		this.taskStatusService = taskStatusService;
 		this.schedulerUtils = schedulerUtils;
@@ -53,7 +53,7 @@ public class TaskStatusResource {
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})	
 	public List<TaskStatus> getTasks() throws IllegalArgumentException, SQLException {
-		SystemStatus system = this.systemStatusService.read(this.config.getSystemId());
+		SchedulerStatus system = this.systemStatusService.read(this.config.getSystemId());
 		return system.getTasks();
 	}
 	
@@ -122,11 +122,11 @@ public class TaskStatusResource {
 	@Path("{id}/runs")
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})	
-	public List<TaskRunStatus> getTaskRuns(@PathParam(value="id") Long id) throws IllegalArgumentException, SQLException {
+	public List<RunStatus> getTaskRuns(@PathParam(value="id") Long id) throws IllegalArgumentException, SQLException {
 		TaskStatus task = this.taskStatusService.read(id);
-		List<TaskRunStatus> retval = new ArrayList<TaskRunStatus>();
+		List<RunStatus> retval = new ArrayList<RunStatus>();
 		
-		for(TaskRunStatus run : task.getTaskRuns()) {
+		for(RunStatus run : task.getTaskRuns()) {
 			retval.add(run);
 		}
 		
@@ -137,15 +137,15 @@ public class TaskStatusResource {
 	@Path("{id}/runs/{run}/steps")
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})	
-	public List<RunStepStatus> getRunSteps(@PathParam(value="id") Long id, @PathParam(value="run") Long run) throws IllegalArgumentException, SQLException {
-		List<RunStepStatus> retval = new ArrayList<RunStepStatus>();
+	public List<StepStatus> getRunSteps(@PathParam(value="id") Long id, @PathParam(value="run") Long run) throws IllegalArgumentException, SQLException {
+		List<StepStatus> retval = new ArrayList<StepStatus>();
 		
-		TaskRunStatus runStatus = this.taskRunStatusService.read(run);
-		if(runStatus.getTask().getId() != id) {
+		RunStatus runStatus = this.taskRunStatusService.read(run);
+		if(runStatus.getTaskStatus().getId() != id) {
 			throw new IllegalArgumentException(INVALID_TASK);
 		}
 		
-		for(RunStepStatus step : runStatus.getRunSteps()) {
+		for(StepStatus step : runStatus.getStepsStatus()) {
 			retval.add(step);
 		}
 		

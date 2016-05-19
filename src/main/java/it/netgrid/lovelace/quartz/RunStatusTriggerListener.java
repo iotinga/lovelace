@@ -12,10 +12,10 @@ import com.google.inject.Singleton;
 import com.j256.ormlite.dao.Dao;
 
 import it.netgrid.commons.data.CrudService;
-import it.netgrid.lovelace.model.RunReason;
-import it.netgrid.lovelace.model.RunResult;
-import it.netgrid.lovelace.model.RunState;
-import it.netgrid.lovelace.model.TaskRunStatus;
+import it.netgrid.lovelace.model.ExecutionReason;
+import it.netgrid.lovelace.model.ExecutionResult;
+import it.netgrid.lovelace.model.ExecutionState;
+import it.netgrid.lovelace.model.RunStatus;
 import it.netgrid.lovelace.model.TaskStatus;
 
 import org.quartz.TriggerListener;
@@ -27,12 +27,12 @@ public class RunStatusTriggerListener implements TriggerListener {
 	
 	private static final Logger log = LoggerFactory.getLogger(RunStatusTriggerListener.class);
 	
-	private final CrudService<TaskRunStatus, Long> taskRunStatusCrudService;
+	private final CrudService<RunStatus, Long> taskRunStatusCrudService;
 	
 	private final Dao<TaskStatus, Long> taskStatusDao;
 	
 	@Inject
-	public RunStatusTriggerListener(CrudService<TaskRunStatus, Long> taskRunStatusCrudService, Dao<TaskStatus, Long> taskStatusDao) {
+	public RunStatusTriggerListener(CrudService<RunStatus, Long> taskRunStatusCrudService, Dao<TaskStatus, Long> taskStatusDao) {
 		this.taskRunStatusCrudService = taskRunStatusCrudService;
 		this.taskStatusDao = taskStatusDao;
 	}
@@ -55,7 +55,7 @@ public class RunStatusTriggerListener implements TriggerListener {
 		String taskName = trigger.getJobKey().getName();
 		log.warn("Misfired trigger for task " + taskName);
 		TaskStatus task = this.taskByName(taskName);
-		TaskRunStatus runStatus = this.buildRunStatus(task);
+		RunStatus runStatus = this.buildRunStatus(task);
 		
 		try {
 			this.taskRunStatusCrudService.create(runStatus);
@@ -81,13 +81,13 @@ public class RunStatusTriggerListener implements TriggerListener {
 		}
 	}
 	
-	private TaskRunStatus buildRunStatus(TaskStatus task) {
-		TaskRunStatus retval = new TaskRunStatus();
+	private RunStatus buildRunStatus(TaskStatus task) {
+		RunStatus retval = new RunStatus();
 		retval.setStartDate(null);
-		retval.setState(RunState.END);
-		retval.setReason(RunReason.SYSTEM);
-		retval.setResult(RunResult.ABORT);
-		retval.setTask(task);
+		retval.setState(ExecutionState.END);
+		retval.setReason(ExecutionReason.SYSTEM);
+		retval.setResult(ExecutionResult.ABORT);
+		retval.setTaskStatus(task);
 		return retval;
 	}
 }

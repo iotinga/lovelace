@@ -1,6 +1,6 @@
 package it.netgrid.lovelace.model;
 
-public enum RunResult {
+public enum ExecutionResult {
 	SUCCESS,
 	ABORT,
 	ERROR

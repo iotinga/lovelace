@@ -1,6 +1,5 @@
 package it.netgrid.lovelace.api;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Date;
 
@@ -9,18 +8,18 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 
 import it.netgrid.commons.data.CrudService;
-import it.netgrid.lovelace.model.SystemStatus;
+import it.netgrid.lovelace.model.SchedulerStatus;
 import it.netgrid.lovelace.model.TaskStatus;
 
-public class SystemStatusCrudService extends TemplateCrudService<SystemStatus, Long> {
+public class SchedulerStatusCrudService extends TemplateCrudService<SchedulerStatus, Long> {
 
 	public static final String INVALID_REQUEST = "not-allowed";
-	private final Dao<SystemStatus, Long> systemStatusDao;
+	private final Dao<SchedulerStatus, Long> systemStatusDao;
 	private final CrudService<TaskStatus, Long> taskStatusService;
 	
 	@Inject
-	public SystemStatusCrudService(ConnectionSource connection, 
-			Dao<SystemStatus, Long> systemStatusDao,
+	public SchedulerStatusCrudService(ConnectionSource connection, 
+			Dao<SchedulerStatus, Long> systemStatusDao,
 			CrudService<TaskStatus, Long> taskStatusService) {
 		super(connection);
 		this.systemStatusDao = systemStatusDao;
@@ -28,23 +27,23 @@ public class SystemStatusCrudService extends TemplateCrudService<SystemStatus, L
 	}
 
 	@Override
-	public int createRaw(SystemStatus arg0) throws SQLException, IllegalArgumentException {
-		return this.systemStatusDao.create(arg0);
+	public int createRaw(SchedulerStatus scheduler) throws SQLException, IllegalArgumentException {
+		return this.systemStatusDao.create(scheduler);
 	}
 
 	@Override
-	public int deleteRaw(SystemStatus arg0) throws SQLException, IllegalArgumentException {
+	public int deleteRaw(SchedulerStatus scheduler) throws SQLException, IllegalArgumentException {
 		throw new IllegalArgumentException(INVALID_REQUEST);
 	}
 
 	@Override
-	public int updateRaw(SystemStatus arg0) throws SQLException, IllegalArgumentException {
-		return this.systemStatusDao.update(arg0);
+	public int updateRaw(SchedulerStatus scheduler) throws SQLException, IllegalArgumentException {
+		return this.systemStatusDao.update(scheduler);
 	}
 
 	@Override
-	public SystemStatus read(Long key) throws SQLException {
-		SystemStatus retval = this.systemStatusDao.queryForId(key);
+	public SchedulerStatus read(Long key) throws SQLException {
+		SchedulerStatus retval = this.systemStatusDao.queryForId(key);
 		
 		if(retval == null) {
 			this.create(this.buildSystemStatus());
@@ -59,10 +58,9 @@ public class SystemStatusCrudService extends TemplateCrudService<SystemStatus, L
 		return retval;
 	}
 
-	private SystemStatus buildSystemStatus() {
-		SystemStatus retval = new SystemStatus();
+	private SchedulerStatus buildSystemStatus() {
+		SchedulerStatus retval = new SchedulerStatus();
 		retval.setActiveFrom(new Date());
-		retval.setUptime(BigDecimal.ZERO);
 		return retval;
 	}
 }

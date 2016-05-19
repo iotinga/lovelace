@@ -30,10 +30,10 @@ public class ModelModule extends AbstractModule {
 	public ConnectionSource getConnection(Configuration configuration) throws SQLException {
 		JdbcPooledConnectionSource retval = new JdbcPooledConnectionSource(configuration.getJdbcConnectionUrl(), configuration.getJdbcUsername(), configuration.getJdbcPassword());
 		try {
-			TableUtils.createTableIfNotExists(retval, SystemStatus.class);
+			TableUtils.createTableIfNotExists(retval, SchedulerStatus.class);
 			TableUtils.createTableIfNotExists(retval, TaskStatus.class);
-			TableUtils.createTableIfNotExists(retval, RunStepStatus.class);
-			TableUtils.createTableIfNotExists(retval, TaskRunStatus.class);
+			TableUtils.createTableIfNotExists(retval, StepStatus.class);
+			TableUtils.createTableIfNotExists(retval, RunStatus.class);
 		} catch (SQLException e) {
 			log.warn("SQL errors during DB creation");
 			log.debug("SQL errors during DB creation:",e);
@@ -43,20 +43,20 @@ public class ModelModule extends AbstractModule {
 	
 	@Provides
 	@Singleton
-	public Dao<RunStepStatus, Long> getRunStepStatusDao(ConnectionSource connectionSource) throws SQLException {
-		return DaoManager.createDao(connectionSource, RunStepStatus.class);
+	public Dao<StepStatus, Long> getRunStepStatusDao(ConnectionSource connectionSource) throws SQLException {
+		return DaoManager.createDao(connectionSource, StepStatus.class);
 	}
 	
 	@Provides
 	@Singleton
-	public Dao<SystemStatus, Long> getSystemStatusDao(ConnectionSource connectionSource) throws SQLException {
-		return DaoManager.createDao(connectionSource, SystemStatus.class);
+	public Dao<SchedulerStatus, Long> getSystemStatusDao(ConnectionSource connectionSource) throws SQLException {
+		return DaoManager.createDao(connectionSource, SchedulerStatus.class);
 	}
 	
 	@Provides
 	@Singleton
-	public Dao<TaskRunStatus, Long> getTaskRunStatusDao(ConnectionSource connectionSource) throws SQLException {
-		return DaoManager.createDao(connectionSource, TaskRunStatus.class);
+	public Dao<RunStatus, Long> getTaskRunStatusDao(ConnectionSource connectionSource) throws SQLException {
+		return DaoManager.createDao(connectionSource, RunStatus.class);
 	}
 	
 	@Provides

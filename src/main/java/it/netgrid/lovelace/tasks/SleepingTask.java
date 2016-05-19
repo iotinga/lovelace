@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import it.netgrid.lovelace.Task;
-import it.netgrid.lovelace.api.RunStatusService;
-import it.netgrid.lovelace.model.RunResult;
+import it.netgrid.lovelace.api.StepService;
+import it.netgrid.lovelace.model.ExecutionResult;
 
 @DisallowConcurrentExecution
 public class SleepingTask implements Task {
@@ -20,14 +20,14 @@ public class SleepingTask implements Task {
 	private static final int DEFAULT_SLEEP_MILLIS = 2000;
 	public static final String SLEEP_MILLIS_FIELD_NAME = "sleep_millis";
 	
-	private final RunStatusService runStatus;
+	private final StepService runStatus;
 	
 	public SleepingTask() {
 		this.runStatus = null;
 	}
 	
 	@Inject
-	public SleepingTask(RunStatusService runStatus) {
+	public SleepingTask(StepService runStatus) {
 		this.runStatus = runStatus;
 	}
 	
@@ -36,7 +36,7 @@ public class SleepingTask implements Task {
 		try {
 			int millis = this.getSleepMillis(arg0);
 			Thread.sleep(millis);
-			this.runStatus.nextStep(arg0, RunResult.SUCCESS, "slept");
+			this.runStatus.nextStep(arg0, ExecutionResult.SUCCESS, "slept");
 			log.info("Slept for " + millis);
 		} catch (InterruptedException e) {
 			log.debug("Sleep interrupt", e);

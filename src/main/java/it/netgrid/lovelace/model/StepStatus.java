@@ -15,16 +15,16 @@ import javax.xml.bind.annotation.XmlTransient;
 import it.netgrid.commons.data.CrudObject;
 
 @XmlRootElement
-@Entity(name="run_step_status")
-public class RunStepStatus implements CrudObject<Long> {
+@Entity(name="step_status")
+public class StepStatus implements CrudObject<Long> {
 	
-	public static final String ID_FIELD_NAME = "rss_id";
-	public static final String TASK_RUN_STATUS_ID_FIELD_NAME = "rss_trs_id";
-	public static final String STEP_NAME_FIELD_NAME = "rss_name";
-	public static final String RESULT_FIELD_NAME = "rss_result";
-	public static final String STATUS_FIELD_NAME = "rss_status";
-	public static final String START_TIME_FIELD_NAME = "rss_start_time";
-	public static final String END_TIME_FIELD_NAME = "rss_end_time";
+	public static final String ID_FIELD_NAME = "stp_id";
+	public static final String RUN_STATUS_ID_FIELD_NAME = "stp_run_id";
+	public static final String STEP_NAME_FIELD_NAME = "stp_name";
+	public static final String EXECUTION_RESULT_FIELD_NAME = "stp_result";
+	public static final String EXECUTION_STATE_FIELD_NAME = "stp_state";
+	public static final String START_TIME_FIELD_NAME = "stp_start_time";
+	public static final String END_TIME_FIELD_NAME = "stp_end_time";
 	
 	@Id
 	@GeneratedValue
@@ -37,20 +37,20 @@ public class RunStepStatus implements CrudObject<Long> {
 	@Column(name=END_TIME_FIELD_NAME)
 	private Date endTime;
 	
-	@Column(name=STATUS_FIELD_NAME)
-	private RunState status;
+	@Column(name=EXECUTION_STATE_FIELD_NAME)
+	private ExecutionState state;
 	
-	@Column(name=RESULT_FIELD_NAME)
-	private RunResult result;
+	@Column(name=EXECUTION_RESULT_FIELD_NAME)
+	private ExecutionResult result;
 	
 	@ManyToOne
-	@JoinColumn(name=TASK_RUN_STATUS_ID_FIELD_NAME)
-	private TaskRunStatus runStatus;
+	@JoinColumn(name=RUN_STATUS_ID_FIELD_NAME)
+	private RunStatus runStatus;
 	
 	@Column(name=STEP_NAME_FIELD_NAME)
 	private String name;
 	
-	public RunStepStatus() {}
+	public StepStatus() {}
 
 	@XmlElement(name="start_time")
 	public Date getStartTime() {
@@ -70,12 +70,12 @@ public class RunStepStatus implements CrudObject<Long> {
 		this.endTime = endTime;
 	}
 
-	public RunState getStatus() {
-		return status;
+	public ExecutionState getState() {
+		return state;
 	}
 
-	public void setStatus(RunState status) {
-		this.status = status;
+	public void setState(ExecutionState state) {
+		this.state = state;
 	}
 
 	public Long getId() {
@@ -87,11 +87,11 @@ public class RunStepStatus implements CrudObject<Long> {
 	}
 
 	@XmlTransient
-	public TaskRunStatus getRunStatus() {
+	public RunStatus getRunStatus() {
 		return runStatus;
 	}
 
-	public void setRunStatus(TaskRunStatus runStatus) {
+	public void setRunStatus(RunStatus runStatus) {
 		this.runStatus = runStatus;
 	}
 
@@ -103,11 +103,11 @@ public class RunStepStatus implements CrudObject<Long> {
 		this.name = name;
 	}
 
-	public RunResult getResult() {
+	public ExecutionResult getResult() {
 		return result;
 	}
 
-	public void setResult(RunResult result) {
+	public void setResult(ExecutionResult result) {
 		this.result = result;
 	}
 	

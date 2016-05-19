@@ -15,10 +15,10 @@ import com.j256.ormlite.dao.Dao;
 import io.codearte.jfairy.Fairy;
 import it.netgrid.lovelace.LovelaceTestEnv;
 import it.netgrid.lovelace.PersistenceTestHandler;
-import it.netgrid.lovelace.model.RunResult;
-import it.netgrid.lovelace.model.RunState;
-import it.netgrid.lovelace.model.RunStepStatus;
-import it.netgrid.lovelace.model.TaskRunStatus;
+import it.netgrid.lovelace.model.ExecutionResult;
+import it.netgrid.lovelace.model.ExecutionState;
+import it.netgrid.lovelace.model.StepStatus;
+import it.netgrid.lovelace.model.RunStatus;
 import it.netgrid.lovelace.model.TaskStatus;
 
 public class RunStatusServiceImplTest {
@@ -33,16 +33,16 @@ public class RunStatusServiceImplTest {
 	private PersistenceTestHandler persistence;
 	
 	@Inject
-	private RunStatusServiceImpl classUnderTest;
+	private StepServiceImpl classUnderTest;
 	
 	@Inject
 	private Dao<TaskStatus, Long> taskStatusDao;
 	
 	@Inject
-	private Dao<TaskRunStatus, Long> taskRunDao;
+	private Dao<RunStatus, Long> taskRunDao;
 	
 	@Inject
-	private Dao<RunStepStatus, Long> runStepDao;
+	private Dao<StepStatus, Long> runStepDao;
 	
 	@Before
 	public void setUp() {
@@ -58,10 +58,10 @@ public class RunStatusServiceImplTest {
 	@Test
 	public void testRunStatusCreationOnStart() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
-		RunStepStatus step = this.classUnderTest.start(task, "start", 1);
+		StepStatus step = this.classUnderTest.start(task, "start", 1);
 	
 		task = this.taskStatusDao.queryForId((long)1);
-		TaskRunStatus runStatus = taskRunDao.queryForId(step.getRunStatus().getId());
+		RunStatus runStatus = taskRunDao.queryForId(step.getRunStatus().getId());
 		
 		assertEquals(runStatus.getId(), task.getCurrentRun().getId());
 	}
@@ -69,9 +69,9 @@ public class RunStatusServiceImplTest {
 	@Test
 	public void testRunStepStatusCreationOnStart() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
-		RunStepStatus step = this.classUnderTest.start(task, "start", 1);
+		StepStatus step = this.classUnderTest.start(task, "start", 1);
 		
-		RunStepStatus newStep = this.runStepDao.queryForId(step.getId());
+		StepStatus newStep = this.runStepDao.queryForId(step.getId());
 		
 		assertNotNull(newStep);
 		assertNotNull(newStep.getRunStatus());
@@ -81,11 +81,11 @@ public class RunStatusServiceImplTest {
 	@Test
 	public void testNextStepNewStepCreation() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
-		RunStepStatus currentStep = this.classUnderTest.start(task, "start", 1);
+		StepStatus currentStep = this.classUnderTest.start(task, "start", 1);
 		
-		RunResult result = fairy.baseProducer().randomElement(RunResult.values());
+		ExecutionResult result = fairy.baseProducer().randomElement(ExecutionResult.values());
 		String stepName = fairy.textProducer().latinSentence();
-		RunStepStatus nextStep = this.classUnderTest.nextStep(task, result, stepName);
+		StepStatus nextStep = this.classUnderTest.nextStep(task, result, stepName);
 		
 		taskStatusDao.refresh(task);
 		taskRunDao.refresh(task.getCurrentRun());
@@ -100,13 +100,13 @@ public class RunStatusServiceImplTest {
 	@Test
 	public void testNextStepOldStepClosed() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
-		RunStepStatus currentStep = this.classUnderTest.start(task, "start", 1);
+		StepStatus currentStep = this.classUnderTest.start(task, "start", 1);
 		
-		RunResult result = fairy.baseProducer().randomElement(RunResult.values());
+		ExecutionResult result = fairy.baseProducer().randomElement(ExecutionResult.values());
 		String stepName = fairy.textProducer().latinSentence();
 		this.classUnderTest.nextStep(task, result, stepName);
 		
-		RunStepStatus oldStep = this.runStepDao.queryForId(currentStep.getId());
+		StepStatus oldStep = this.runStepDao.queryForId(currentStep.getId());
 		
 		assertEquals(result, oldStep.getResult());
 	}
@@ -114,22 +114,22 @@ public class RunStatusServiceImplTest {
 	@Test
 	public void testEndTask() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
-		RunStepStatus firstStep = this.classUnderTest.start(task, "start", 1);
+		StepStatus firstStep = this.classUnderTest.start(task, "start", 1);
 		taskRunDao.refresh(task.getCurrentRun());
-		TaskRunStatus currentRun = task.getCurrentRun();
+		RunStatus currentRun = task.getCurrentRun();
 
-		RunResult taskResult = fairy.baseProducer().randomElement(RunResult.values());
-		RunResult stepResult = fairy.baseProducer().randomElement(RunResult.values());
-		RunStepStatus lastStep = this.classUnderTest.end(task, stepResult, taskResult);
+		ExecutionResult taskResult = fairy.baseProducer().randomElement(ExecutionResult.values());
+		ExecutionResult stepResult = fairy.baseProducer().randomElement(ExecutionResult.values());
+		StepStatus lastStep = this.classUnderTest.end(task, stepResult, taskResult);
 		
 		task = this.taskStatusDao.queryForId((long)1);
 		taskRunDao.refresh(task.getLastRun());
-		TaskRunStatus lastRun = task.getLastRun();
+		RunStatus lastRun = task.getLastRun();
 		
 
 		assertNull(task.getCurrentRun());
 		assertEquals(currentRun.getId(), lastRun.getId());
-		assertEquals(RunState.END, lastRun.getState());
+		assertEquals(ExecutionState.END, lastRun.getState());
 		
 		assertEquals(firstStep.getId(), lastStep.getId());
 		assertEquals(stepResult, lastStep.getResult());
@@ -141,7 +141,7 @@ public class RunStatusServiceImplTest {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
 		this.classUnderTest.start(task, "start", 1);
 
-		this.classUnderTest.end(task, RunResult.SUCCESS, RunResult.SUCCESS);
+		this.classUnderTest.end(task, ExecutionResult.SUCCESS, ExecutionResult.SUCCESS);
 		
 		task = this.taskStatusDao.queryForId((long)1);
 		taskRunDao.refresh(task.getLastRun());
@@ -157,7 +157,7 @@ public class RunStatusServiceImplTest {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
 		this.classUnderTest.start(task, "start", 1);
 
-		this.classUnderTest.end(task, RunResult.ERROR, RunResult.ERROR);
+		this.classUnderTest.end(task, ExecutionResult.ERROR, ExecutionResult.ERROR);
 		
 		task = this.taskStatusDao.queryForId((long)1);
 		taskRunDao.refresh(task.getLastRun());
