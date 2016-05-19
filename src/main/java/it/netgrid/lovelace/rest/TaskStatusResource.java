@@ -19,6 +19,7 @@ import com.google.inject.Inject;
 import it.netgrid.commons.data.CrudService;
 import it.netgrid.lovelace.model.StepStatus;
 import it.netgrid.lovelace.model.SchedulerStatus;
+import it.netgrid.lovelace.Configuration;
 import it.netgrid.lovelace.model.RunStatus;
 import it.netgrid.lovelace.model.TaskStatus;
 import it.netgrid.lovelace.quartz.SchedulerUtils;
@@ -30,17 +31,30 @@ public class TaskStatusResource {
 	
 	private final CrudService<TaskStatus, Long> taskStatusService;
 	private final CrudService<RunStatus, Long> runStatusService;
+	private final CrudService<SchedulerStatus, Long> schedulerStatusService;
 	private final SchedulerUtils schedulerUtils;
+	private final Configuration config;
 	
 	@Inject
 	public TaskStatusResource(
-			CrudService<SchedulerStatus, Long> schedulerStatusService,
+			Configuration config,
 			CrudService<TaskStatus, Long> taskStatusService,
 			SchedulerUtils schedulerUtils,
+			CrudService<SchedulerStatus, Long> schedulerStatusService,
 			CrudService<RunStatus, Long> runStatusService) {
+		this.config = config;
 		this.taskStatusService = taskStatusService;
 		this.schedulerUtils = schedulerUtils;
 		this.runStatusService = runStatusService;
+		this.schedulerStatusService = schedulerStatusService;
+	}
+
+	@GET
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})	
+	public List<TaskStatus> getTasks() throws IllegalArgumentException, SQLException {
+		SchedulerStatus system = this.schedulerStatusService.read(this.config.getSchedulerId());
+		return system.getTasks();
 	}
 	
 	@POST

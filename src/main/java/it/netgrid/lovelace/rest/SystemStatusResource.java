@@ -1,7 +1,6 @@
 package it.netgrid.lovelace.rest;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -14,7 +13,6 @@ import com.google.inject.Inject;
 import it.netgrid.commons.data.CrudService;
 import it.netgrid.lovelace.Configuration;
 import it.netgrid.lovelace.model.SchedulerStatus;
-import it.netgrid.lovelace.model.TaskStatus;
 
 @Path("/")
 public class SystemStatusResource {
@@ -33,16 +31,6 @@ public class SystemStatusResource {
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})	
 	public SchedulerStatus get() throws IllegalArgumentException, SQLException {
 		return this.schedulerStatusService.read(this.config.getSchedulerId());
-	}
-
-
-	@GET
-	@Path("/tasks")
-	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
-    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})	
-	public List<TaskStatus> getTasks() throws IllegalArgumentException, SQLException {
-		SchedulerStatus system = this.schedulerStatusService.read(this.config.getSchedulerId());
-		return system.getTasks();
 	}
 	
 }

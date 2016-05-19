@@ -60,22 +60,12 @@ public class Main {
 			
 			// Create the server
 			Main.server = new Server(new InetSocketAddress(Main.config.getBindAddress(), Main.config.getBindPort()));
-
-			// Create a servlet context and add the jersey servlet
 			ServletContextHandler sch = new ServletContextHandler(server, "/");
-	
-			// Add our Guice listener that includes our bindings
 			sch.addEventListener(new GuiceConfig(Main.injector));
-	
-			// Then add GuiceFilter and configure the server to
-			// reroute all requests through this filter.
 			sch.addFilter(GuiceFilter.class, "/*", null);
-	
-			// Must add DefaultServlet for embedded Jetty.
-			// Failing to do this will cause 404 errors.
 			sch.addServlet(DefaultServlet.class, "/");
 	
-			// Start the server
+			// Start services
 			try {
 				Main.scheduler.start();
 				Main.server.start();
