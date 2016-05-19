@@ -12,33 +12,33 @@ import it.netgrid.lovelace.model.StepStatus;
 
 public class StepStatusCrudService extends TemplateCrudService<StepStatus, Long> {
 
-	private final Dao<StepStatus, Long> runStepStatusDao;
+	private final Dao<StepStatus, Long> stepStatusDao;
 	
 	@Inject
-	public StepStatusCrudService(ConnectionSource connection, Dao<StepStatus, Long> runStepStatusDao) {
+	public StepStatusCrudService(ConnectionSource connection, Dao<StepStatus, Long> stepStatusDao) {
 		super(connection);
-		this.runStepStatusDao = runStepStatusDao;
+		this.stepStatusDao = stepStatusDao;
 	}
 
 	@Override
-	public int createRaw(StepStatus arg0) throws SQLException, IllegalArgumentException {
-		Validate.notNull(arg0.getRunStatus());
-		return this.runStepStatusDao.create(arg0);
+	public int createRaw(StepStatus step) throws SQLException, IllegalArgumentException {
+		Validate.notNull(step.getRunStatus());
+		return this.stepStatusDao.create(step);
 	}
 
 	@Override
-	public int deleteRaw(StepStatus arg0) throws SQLException, IllegalArgumentException {
-		return this.runStepStatusDao.delete(arg0);
+	public int deleteRaw(StepStatus step) throws SQLException, IllegalArgumentException {
+		return this.stepStatusDao.delete(step);
 	}
 
 	@Override
-	public int updateRaw(StepStatus arg0) throws SQLException, IllegalArgumentException {
-		return this.runStepStatusDao.update(arg0);
+	public int updateRaw(StepStatus step) throws SQLException, IllegalArgumentException {
+		return this.stepStatusDao.update(step);
 	}
 
 	@Override
 	public StepStatus read(Long key) throws SQLException {
-		return this.runStepStatusDao.queryForId(key);
+		return this.stepStatusDao.queryForId(key);
 	}
 
 }

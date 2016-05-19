@@ -3,7 +3,7 @@ package it.netgrid.lovelace;
 import java.util.Properties;
 
 public interface Configuration {
-	public Long getSystemId();
+	public Long getSchedulerId();
 	public String getBindAddress();
 	public int getBindPort();
 	public String getJdbcConnectionUrl();

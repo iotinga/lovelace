@@ -27,13 +27,13 @@ public class RunStatusTriggerListener implements TriggerListener {
 	
 	private static final Logger log = LoggerFactory.getLogger(RunStatusTriggerListener.class);
 	
-	private final CrudService<RunStatus, Long> taskRunStatusCrudService;
+	private final CrudService<RunStatus, Long> runStatusService;
 	
 	private final Dao<TaskStatus, Long> taskStatusDao;
 	
 	@Inject
-	public RunStatusTriggerListener(CrudService<RunStatus, Long> taskRunStatusCrudService, Dao<TaskStatus, Long> taskStatusDao) {
-		this.taskRunStatusCrudService = taskRunStatusCrudService;
+	public RunStatusTriggerListener(CrudService<RunStatus, Long> runStatusService, Dao<TaskStatus, Long> taskStatusDao) {
+		this.runStatusService = runStatusService;
 		this.taskStatusDao = taskStatusDao;
 	}
 
@@ -58,7 +58,7 @@ public class RunStatusTriggerListener implements TriggerListener {
 		RunStatus runStatus = this.buildRunStatus(task);
 		
 		try {
-			this.taskRunStatusCrudService.create(runStatus);
+			this.runStatusService.create(runStatus);
 		} catch (IllegalArgumentException e) {
 			log.error("Unable to update run status informations", e);
 		} catch (SQLException e) {

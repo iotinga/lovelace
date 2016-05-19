@@ -48,9 +48,9 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 	private final SchedulerUtils schedulerUtils;
 	private final CronValidator cronValidator;
 	private final Dao<TaskStatus, Long> taskStatusDao;
-	private final Dao<RunStatus, Long> taskRunStatusDao;
-	private final CrudService<SchedulerStatus, Long> systemStatusService;
-	private final CrudService<RunStatus, Long> taskRunStatusCrudService;
+	private final Dao<RunStatus, Long> runStatusDao;
+	private final CrudService<SchedulerStatus, Long> schedulerStatusService;
+	private final CrudService<RunStatus, Long> runStatusService;
 	
 	@Inject
 	public TaskStatusCrudService(ConnectionSource connection, 
@@ -59,18 +59,18 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 			Scheduler scheduler, 
 			CronValidator cronValidator,
 			Dao<TaskStatus, Long> taskStatusDao,
-			Dao<RunStatus, Long> taskRunStatusDao,
-			CrudService<RunStatus, Long> taskRunStatusCrudService,
-			CrudService<SchedulerStatus, Long> systemStatusService) {
+			Dao<RunStatus, Long> runStatusDao,
+			CrudService<RunStatus, Long> runStatusService,
+			CrudService<SchedulerStatus, Long> schedulerStatusService) {
 		super(connection);
 		this.config = config;
 		this.scheduler = scheduler;
 		this.schedulerUtils = schedulerUtils;
 		this.cronValidator = cronValidator;
 		this.taskStatusDao = taskStatusDao;
-		this.taskRunStatusDao = taskRunStatusDao;
-		this.taskRunStatusCrudService = taskRunStatusCrudService;
-		this.systemStatusService = systemStatusService;
+		this.runStatusDao = runStatusDao;
+		this.runStatusService = runStatusService;
+		this.schedulerStatusService = schedulerStatusService;
 	}
 
 	@Override
@@ -78,8 +78,8 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		Validate.notBlank(task.getName());
 		this.cronValidator.validate(task.getSchedule());
 		
-		SchedulerStatus system = this.systemStatusService.read(this.config.getSystemId());
-		task.setSchedulerStatus(system);
+		SchedulerStatus scheduler = this.schedulerStatusService.read(this.config.getSchedulerId());
+		task.setSchedulerStatus(scheduler);
 		task.setCreation(new Date());
 		task.setMarshalledConfig(this.getConfigString(task.getConfig()));
 		task.setUpdated(task.getCreation());
@@ -105,7 +105,7 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 	public int deleteRaw(TaskStatus task) throws SQLException, IllegalArgumentException {
 		int retval = 0;
 		for(RunStatus run : task.getTaskRuns()) {
-			retval += this.taskRunStatusCrudService.deleteRaw(run);
+			retval += this.runStatusService.deleteRaw(run);
 		}
 		
 		retval += this.taskStatusDao.delete(task);
@@ -178,15 +178,15 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		retval.setConfig(this.getConfigMap(retval.getMarshalledConfig()));
 		
 		if(retval.getCurrentRun() != null) {
-			this.taskRunStatusDao.refresh(retval.getCurrentRun());
+			this.runStatusDao.refresh(retval.getCurrentRun());
 		}
 		
 		if(retval.getLastRun() != null) {
-			this.taskRunStatusDao.refresh(retval.getLastRun());
+			this.runStatusDao.refresh(retval.getLastRun());
 		}
 		
 		if(retval.getLastSuccessRun() != null) {
-			this.taskRunStatusDao.refresh(retval.getLastSuccessRun());
+			this.runStatusDao.refresh(retval.getLastSuccessRun());
 		}
 		
 		try {

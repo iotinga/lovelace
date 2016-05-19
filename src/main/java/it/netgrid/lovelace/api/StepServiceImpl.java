@@ -28,30 +28,30 @@ public class StepServiceImpl implements StepService {
 
 	private static final Logger log = LoggerFactory.getLogger(StepServiceImpl.class);
 	
-	private final CrudService<StepStatus, Long> runStepCrudService;
-	private final Dao<RunStatus, Long> taskRunStatusDao;
-	private final Dao<StepStatus, Long> runStepDao;
+	private final CrudService<StepStatus, Long> stepStatusService;
+	private final Dao<RunStatus, Long> runStatusDao;
+	private final Dao<StepStatus, Long> stepStatusDao;
 	private final ConnectionSource connection;
-	private final CrudService<RunStatus, Long> taskRunStatusCrudService;
-	private final CrudService<TaskStatus, Long> taskStatusCrudService;
+	private final CrudService<RunStatus, Long> runStatusService;
+	private final CrudService<TaskStatus, Long> taskStatusService;
 	private final Dao<TaskStatus, Long> taskStatusDao;
 	
 	@Inject
 	public StepServiceImpl(
 			Dao<TaskStatus, Long> taskStatusDao,
 			ConnectionSource connection,
-			Dao<RunStatus, Long> taskRunStatusDao,
-			Dao<StepStatus, Long> runStepDao,
-			CrudService<StepStatus, Long> runStepCrudService, 
-			CrudService<RunStatus, Long> taskRunStatusCrudService, 
-			CrudService<TaskStatus, Long> taskStatusCrudService) {
+			Dao<RunStatus, Long> runStatusDao,
+			Dao<StepStatus, Long> stepStatusDao,
+			CrudService<StepStatus, Long> stepStatusService, 
+			CrudService<RunStatus, Long> runStatusService, 
+			CrudService<TaskStatus, Long> taskStatusService) {
 		this.taskStatusDao = taskStatusDao;
-		this.runStepCrudService = runStepCrudService;
-		this.taskRunStatusDao = taskRunStatusDao;
-		this.runStepDao = runStepDao;
+		this.stepStatusService = stepStatusService;
+		this.runStatusDao = runStatusDao;
+		this.stepStatusDao = stepStatusDao;
 		this.connection = connection;
-		this.taskRunStatusCrudService = taskRunStatusCrudService;
-		this.taskStatusCrudService = taskStatusCrudService;
+		this.runStatusService = runStatusService;
+		this.taskStatusService = taskStatusService;
 	}
 	
 	@Override
@@ -65,17 +65,17 @@ public class StepServiceImpl implements StepService {
 					RunStatus runStatus = buildRunStatus(task);
 					runStatus.setTotalStepsCount(totalStepsCount);
 
-					taskRunStatusCrudService.createRaw(runStatus);
+					runStatusService.createRaw(runStatus);
 					
 					task.setCurrentRun(runStatus);
-					taskStatusCrudService.updateRaw(task);
+					taskStatusService.updateRaw(task);
 					
 					StepStatus stepStatus = buildRunStepStatus(runStatus, firstStepName);
-					runStepCrudService.createRaw(stepStatus);
+					stepStatusService.createRaw(stepStatus);
 					
 					runStatus.setCurrentStep(stepStatus);
-					taskRunStatusCrudService.updateRaw(runStatus);
-					taskRunStatusDao.refresh(stepStatus.getRunStatus());
+					runStatusService.updateRaw(runStatus);
+					runStatusDao.refresh(stepStatus.getRunStatus());
 
 					return stepStatus;
 				}
@@ -96,16 +96,16 @@ public class StepServiceImpl implements StepService {
 
 				@Override
 				public StepStatus call() throws Exception {
-					taskRunStatusDao.refresh(task.getCurrentRun());
+					runStatusDao.refresh(task.getCurrentRun());
 					RunStatus runStatus = task.getCurrentRun();
 					StepStatus oldStepStatus = getCurrentStep(runStatus);
 					end(oldStepStatus, currentStepResult);
 					StepStatus stepStatus = buildRunStepStatus(runStatus, nextStepName);
-					runStepCrudService.createRaw(stepStatus);
+					stepStatusService.createRaw(stepStatus);
 					runStatus.setCurrentStep(stepStatus);
-					taskRunStatusCrudService.updateRaw(runStatus);
-					stepStatus = runStepCrudService.read(stepStatus.getId());
-					taskRunStatusDao.refresh(stepStatus.getRunStatus());
+					runStatusService.updateRaw(runStatus);
+					stepStatus = stepStatusService.read(stepStatus.getId());
+					runStatusDao.refresh(stepStatus.getRunStatus());
 					return stepStatus;
 				}
 				
@@ -124,22 +124,22 @@ public class StepServiceImpl implements StepService {
 
 				@Override
 				public StepStatus call() throws Exception {
-					taskRunStatusDao.refresh(task.getCurrentRun());
-					RunStatus taskRun = task.getCurrentRun();
-					StepStatus stepStatus = getCurrentStep(taskRun); 
+					runStatusDao.refresh(task.getCurrentRun());
+					RunStatus run = task.getCurrentRun();
+					StepStatus stepStatus = getCurrentStep(run); 
 					end(stepStatus, currentStepResult);
-					taskRun.setEndDate(new Date());
-					taskRun.setResult(taskResult);
-					taskRun.setState(ExecutionState.END);
-					taskRunStatusCrudService.updateRaw(taskRun);
+					run.setEndDate(new Date());
+					run.setResult(taskResult);
+					run.setState(ExecutionState.END);
+					runStatusService.updateRaw(run);
 					
-					task.setLastRun(taskRun);
+					task.setLastRun(run);
 					task.setCurrentRun(null);
 					if(taskResult == ExecutionResult.SUCCESS) {
-						task.setLastSuccessRun(taskRun);
+						task.setLastSuccessRun(run);
 					}
-					taskStatusCrudService.updateRaw(task);
-					return runStepCrudService.read(stepStatus.getId());
+					taskStatusService.updateRaw(task);
+					return stepStatusService.read(stepStatus.getId());
 				}
 				
 			});
@@ -151,7 +151,7 @@ public class StepServiceImpl implements StepService {
 	}
 	
 	private StepStatus getCurrentStep(RunStatus runStatus) {
-		QueryBuilder<StepStatus, Long> query = this.runStepDao.queryBuilder();
+		QueryBuilder<StepStatus, Long> query = this.stepStatusDao.queryBuilder();
 		try {
 			query.where().eq(StepStatus.RUN_STATUS_ID_FIELD_NAME, runStatus.getId());
 			List<StepStatus> runSteps = query.orderBy(StepStatus.START_TIME_FIELD_NAME, false).query();
@@ -166,7 +166,7 @@ public class StepServiceImpl implements StepService {
 		step.setEndTime(new Date());
 		step.setState(ExecutionState.END);
 		step.setResult(result);
-		this.runStepCrudService.updateRaw(step);
+		this.stepStatusService.updateRaw(step);
 	}
 	
 	private StepStatus buildRunStepStatus(RunStatus runStatus, String stepName) {

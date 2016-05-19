@@ -73,7 +73,7 @@ public class LovelaceTestEnv extends AbstractModule {
 			}
 
 			@Override
-			public Long getSystemId() {
+			public Long getSchedulerId() {
 				return (long)1;
 			}
 		};

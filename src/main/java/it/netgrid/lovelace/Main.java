@@ -107,6 +107,8 @@ public class Main {
 
 				// Route all requests through GuiceContainer
 				serve("/*").with(GuiceContainer.class, params);
+				
+				// This bindings must be after the "serve" call
 				bind(SQLExceptionMapper.class);
 				bind(IllegalArgumentExceptionMapper.class);
 				bind(NullPointerExceptionMapper.class);

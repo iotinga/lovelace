@@ -14,21 +14,21 @@ import it.netgrid.lovelace.model.TaskStatus;
 public class SchedulerStatusCrudService extends TemplateCrudService<SchedulerStatus, Long> {
 
 	public static final String INVALID_REQUEST = "not-allowed";
-	private final Dao<SchedulerStatus, Long> systemStatusDao;
+	private final Dao<SchedulerStatus, Long> schedulerStatusDao;
 	private final CrudService<TaskStatus, Long> taskStatusService;
 	
 	@Inject
 	public SchedulerStatusCrudService(ConnectionSource connection, 
-			Dao<SchedulerStatus, Long> systemStatusDao,
+			Dao<SchedulerStatus, Long> schedulerStatusDao,
 			CrudService<TaskStatus, Long> taskStatusService) {
 		super(connection);
-		this.systemStatusDao = systemStatusDao;
+		this.schedulerStatusDao = schedulerStatusDao;
 		this.taskStatusService = taskStatusService;
 	}
 
 	@Override
 	public int createRaw(SchedulerStatus scheduler) throws SQLException, IllegalArgumentException {
-		return this.systemStatusDao.create(scheduler);
+		return this.schedulerStatusDao.create(scheduler);
 	}
 
 	@Override
@@ -38,15 +38,15 @@ public class SchedulerStatusCrudService extends TemplateCrudService<SchedulerSta
 
 	@Override
 	public int updateRaw(SchedulerStatus scheduler) throws SQLException, IllegalArgumentException {
-		return this.systemStatusDao.update(scheduler);
+		return this.schedulerStatusDao.update(scheduler);
 	}
 
 	@Override
 	public SchedulerStatus read(Long key) throws SQLException {
-		SchedulerStatus retval = this.systemStatusDao.queryForId(key);
+		SchedulerStatus retval = this.schedulerStatusDao.queryForId(key);
 		
 		if(retval == null) {
-			this.create(this.buildSystemStatus());
+			this.create(this.buildSchedulerStatus());
 			return this.read(key);
 		}
 		
@@ -58,7 +58,7 @@ public class SchedulerStatusCrudService extends TemplateCrudService<SchedulerSta
 		return retval;
 	}
 
-	private SchedulerStatus buildSystemStatus() {
+	private SchedulerStatus buildSchedulerStatus() {
 		SchedulerStatus retval = new SchedulerStatus();
 		retval.setActiveFrom(new Date());
 		return retval;
