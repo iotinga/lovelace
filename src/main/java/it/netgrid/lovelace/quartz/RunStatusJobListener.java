@@ -7,14 +7,13 @@ import org.quartz.JobListener;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import it.netgrid.lovelace.Task;
 import it.netgrid.lovelace.api.RunStatusService;
 import it.netgrid.lovelace.model.RunResult;
 import it.netgrid.lovelace.model.TaskStatus;
 
 @Singleton
 public class RunStatusJobListener implements JobListener {
-	
-	private static final String START_STEP_NAME = "start";
 	
 	private final RunStatusService service;
 
@@ -30,15 +29,17 @@ public class RunStatusJobListener implements JobListener {
 
 	@Override
 	public void jobToBeExecuted(JobExecutionContext context) {
-		TaskStatus task = this.service.getTaskStatus(context);
-		this.service.start(task, START_STEP_NAME);
+		TaskStatus status = this.service.getTaskStatus(context);
+		Task task = (Task)context.getJobInstance();
+		this.service.start(status, task.getFirstStepName(), task.getStepsCount());
 	}
 
 	@Override
 	public void jobExecutionVetoed(JobExecutionContext context) {
-		TaskStatus task = this.service.getTaskStatus(context);
-		this.service.start(task, START_STEP_NAME);
-		this.service.end(task, RunResult.ABORT, RunResult.ABORT);
+		TaskStatus status = this.service.getTaskStatus(context);
+		Task task = (Task)context.getJobInstance();
+		this.service.start(status, task.getFirstStepName(), task.getStepsCount());
+		this.service.end(status, RunResult.ABORT, RunResult.ABORT);
 	}
 
 	@Override

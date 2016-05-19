@@ -58,7 +58,7 @@ public class RunStatusServiceImplTest {
 	@Test
 	public void testRunStatusCreationOnStart() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
-		RunStepStatus step = this.classUnderTest.start(task, "start");
+		RunStepStatus step = this.classUnderTest.start(task, "start", 1);
 	
 		task = this.taskStatusDao.queryForId((long)1);
 		TaskRunStatus runStatus = taskRunDao.queryForId(step.getRunStatus().getId());
@@ -69,7 +69,7 @@ public class RunStatusServiceImplTest {
 	@Test
 	public void testRunStepStatusCreationOnStart() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
-		RunStepStatus step = this.classUnderTest.start(task, "start");
+		RunStepStatus step = this.classUnderTest.start(task, "start", 1);
 		
 		RunStepStatus newStep = this.runStepDao.queryForId(step.getId());
 		
@@ -81,7 +81,7 @@ public class RunStatusServiceImplTest {
 	@Test
 	public void testNextStepNewStepCreation() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
-		RunStepStatus currentStep = this.classUnderTest.start(task, "start");
+		RunStepStatus currentStep = this.classUnderTest.start(task, "start", 1);
 		
 		RunResult result = fairy.baseProducer().randomElement(RunResult.values());
 		String stepName = fairy.textProducer().latinSentence();
@@ -100,7 +100,7 @@ public class RunStatusServiceImplTest {
 	@Test
 	public void testNextStepOldStepClosed() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
-		RunStepStatus currentStep = this.classUnderTest.start(task, "start");
+		RunStepStatus currentStep = this.classUnderTest.start(task, "start", 1);
 		
 		RunResult result = fairy.baseProducer().randomElement(RunResult.values());
 		String stepName = fairy.textProducer().latinSentence();
@@ -114,7 +114,7 @@ public class RunStatusServiceImplTest {
 	@Test
 	public void testEndTask() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
-		RunStepStatus firstStep = this.classUnderTest.start(task, "start");
+		RunStepStatus firstStep = this.classUnderTest.start(task, "start", 1);
 		taskRunDao.refresh(task.getCurrentRun());
 		TaskRunStatus currentRun = task.getCurrentRun();
 
@@ -139,7 +139,7 @@ public class RunStatusServiceImplTest {
 	@Test
 	public void testEndSuccessfulTask() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
-		this.classUnderTest.start(task, "start");
+		this.classUnderTest.start(task, "start", 1);
 
 		this.classUnderTest.end(task, RunResult.SUCCESS, RunResult.SUCCESS);
 		
@@ -155,7 +155,7 @@ public class RunStatusServiceImplTest {
 	@Test
 	public void testEndErrorTask() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
-		this.classUnderTest.start(task, "start");
+		this.classUnderTest.start(task, "start", 1);
 
 		this.classUnderTest.end(task, RunResult.ERROR, RunResult.ERROR);
 		

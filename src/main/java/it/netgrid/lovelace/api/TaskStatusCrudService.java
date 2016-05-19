@@ -84,10 +84,10 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		task.setMarshalledConfig(this.getConfigString(task.getConfig()));
 		task.setUpdated(task.getCreation());
 		
-		int retval = this.taskStatusDao.create(task);
-		
 		JobDetail detail = this.createJobDetail(task);
 		Trigger trigger = this.getTrigger(task);
+		
+		int retval = this.taskStatusDao.create(task);
 
 		// Scheduler operations have to been treated as "COMMIT"s:
 		// Scheduler can rollback DB operations, 

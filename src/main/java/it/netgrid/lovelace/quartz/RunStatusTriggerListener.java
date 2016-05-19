@@ -43,7 +43,9 @@ public class RunStatusTriggerListener implements TriggerListener {
 	}
 
 	@Override
-	public void triggerFired(Trigger trigger, JobExecutionContext context) { }
+	public void triggerFired(Trigger trigger, JobExecutionContext context) { 
+		log.debug("Trigger fired: " + trigger.getKey().getName());
+	}
 
 	@Override
 	public boolean vetoJobExecution(Trigger trigger, JobExecutionContext context) { return false; }
@@ -65,7 +67,9 @@ public class RunStatusTriggerListener implements TriggerListener {
 	}
 
 	@Override
-	public void triggerComplete(Trigger trigger, JobExecutionContext context, CompletedExecutionInstruction triggerInstructionCode) { }
+	public void triggerComplete(Trigger trigger, JobExecutionContext context, CompletedExecutionInstruction triggerInstructionCode) {
+		log.debug("Trigger complete: " + trigger.getKey().getName());
+	}
 
 	private TaskStatus taskByName(String name) {
 		try {

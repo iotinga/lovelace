@@ -55,7 +55,7 @@ public class RunStatusServiceImpl implements RunStatusService {
 	}
 	
 	@Override
-	public RunStepStatus start(final TaskStatus task, final String firstStepName) {
+	public RunStepStatus start(final TaskStatus task, final String firstStepName, final int totalStepsCount) {
 		RunStepStatus runStatus = null;
 		try {
 			runStatus = TransactionManager.callInTransaction(connection, new Callable<RunStepStatus>() {
@@ -63,6 +63,8 @@ public class RunStatusServiceImpl implements RunStatusService {
 				@Override
 				public RunStepStatus call() throws Exception {
 					TaskRunStatus runStatus = buildRunStatus(task);
+					runStatus.setTotalStepsCount(totalStepsCount);
+
 					taskRunStatusCrudService.createRaw(runStatus);
 					
 					task.setCurrentRun(runStatus);

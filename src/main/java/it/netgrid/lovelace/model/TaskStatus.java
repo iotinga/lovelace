@@ -214,5 +214,4 @@ public class TaskStatus implements CrudObject<Long> {
 	public void setTaskRuns(ForeignCollection<TaskRunStatus> taskRuns) {
 		this.taskRuns = taskRuns;
 	}
-
 }

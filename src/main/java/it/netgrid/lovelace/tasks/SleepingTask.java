@@ -12,7 +12,6 @@ import com.google.inject.Inject;
 import it.netgrid.lovelace.Task;
 import it.netgrid.lovelace.api.RunStatusService;
 import it.netgrid.lovelace.model.RunResult;
-import it.netgrid.lovelace.model.TaskStatus;
 
 @DisallowConcurrentExecution
 public class SleepingTask implements Task {
@@ -23,6 +22,10 @@ public class SleepingTask implements Task {
 	
 	private final RunStatusService runStatus;
 	
+	public SleepingTask() {
+		this.runStatus = null;
+	}
+	
 	@Inject
 	public SleepingTask(RunStatusService runStatus) {
 		this.runStatus = runStatus;
@@ -32,8 +35,8 @@ public class SleepingTask implements Task {
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		try {
 			int millis = this.getSleepMillis(arg0);
-			this.runStatus.nextStep(arg0, RunResult.SUCCESS, "going to sleep");
 			Thread.sleep(millis);
+			this.runStatus.nextStep(arg0, RunResult.SUCCESS, "slept");
 			log.info("Slept for " + millis);
 		} catch (InterruptedException e) {
 			log.debug("Sleep interrupt", e);
@@ -41,9 +44,8 @@ public class SleepingTask implements Task {
 	}
 
 	@Override
-	public TaskStatus getStatus() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getFirstStepName() {
+		return "going to sleep";
 	}
 
 	@Override

@@ -7,7 +7,7 @@ import it.netgrid.lovelace.model.RunStepStatus;
 import it.netgrid.lovelace.model.TaskStatus;
 
 public interface RunStatusService {
-	public RunStepStatus start(TaskStatus task, String firstStepName);
+	public RunStepStatus start(TaskStatus task, String firstStepName, int totalStepsCount);
 	public RunStepStatus nextStep(JobExecutionContext context, RunResult currentStepResult, String nextStepName);
 	public RunStepStatus nextStep(TaskStatus task, RunResult currentStepResult, String nextStepName);
 	public RunStepStatus end(TaskStatus task, RunResult stepResult, RunResult result);

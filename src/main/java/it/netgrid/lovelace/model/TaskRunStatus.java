@@ -31,6 +31,7 @@ public class TaskRunStatus implements CrudObject<Long> {
 	public static final String END_DATE_FIELD_NAME = "trs_end_date";
 	public static final String RUN_STATE_FIELD_NAME = "trs_run_state";
 	public static final String RUN_RESULT_FIELD_NAME = "trs_run_result";
+	public static final String TOTAL_STEPS_COUNT_FIELD_NAME = "trs_total_steps_count";
 	public static final String TASK_ID_FIELD_NAME = "trs_tst_id";
 	public static final String CURRENT_RUN_STEP_ID_FIELD_NAME = "trs_tss_id";
 	public static final String RUN_REASON_FIELD_NAME = "trs_run_reason";
@@ -65,6 +66,9 @@ public class TaskRunStatus implements CrudObject<Long> {
 	
 	@Transient
 	private List<RunStepStatus> steps;
+	
+	@Column(name=TOTAL_STEPS_COUNT_FIELD_NAME)
+	private int totalStepsCount;
 	
 	public TaskRunStatus() {
 		this.steps = new ArrayList<RunStepStatus>();
@@ -162,6 +166,15 @@ public class TaskRunStatus implements CrudObject<Long> {
 
 	public void setSteps(List<RunStepStatus> steps) {
 		this.steps = steps;
+	}
+
+	@XmlElement(name="total_steps_count")
+	public int getTotalStepsCount() {
+		return totalStepsCount;
+	}
+
+	public void setTotalStepsCount(int totalStepsCount) {
+		this.totalStepsCount = totalStepsCount;
 	}
 	
 }
