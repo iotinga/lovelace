@@ -71,6 +71,11 @@ public class LovelaceTestEnv extends AbstractModule {
 			public String getBindAddress() {
 				return "127.0.0.1";
 			}
+
+			@Override
+			public Long getSchedulerId() {
+				return (long)1;
+			}
 		};
 	}
 	

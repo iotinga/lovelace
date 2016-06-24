@@ -1,8 +1,7 @@
 package it.netgrid.lovelace.model;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.Column;
@@ -10,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
@@ -27,17 +25,17 @@ import it.netgrid.commons.data.CrudObject;
 @Entity(name="task_status")
 public class TaskStatus implements CrudObject<Long> {
 
-	public static final String ID_FIELD_NAME = "tst_id";
-	public static final String SYSYEM_ID_FIELD_NAME = "tst_sys_id";
-	public static final String CANONICAL_NAME_FIELD_NAME = "tst_canonical_name";
-	public static final String NAME_FIELD_NAME = "tst_name";
-	public static final String CREATION_FIELD_NAME = "tst_creation";
-	public static final String UPDATED_FIELD_NAME = "tst_updated";
-	public static final String CONFIG_FIELD_NAME = "tst_config";
-	public static final String SCHEDULE_FIELD_NAME = "tst_schedule";
-	public static final String LAST_RUN_ID_FIELD_NAME = "tst_last_trs_id";
-	public static final String LAST_SUCCESS_RUN_ID_FIELD_NAME = "tst_last_success_trs_id";
-	public static final String CURRENT_RUN_ID_FIELD_NAME = "tst_current_trs_id";
+	public static final String ID_FIELD_NAME = "tsk_id";
+	public static final String SCHEDULER_STATUS_ID_FIELD_NAME = "tsk_sys_id";
+	public static final String CANONICAL_NAME_FIELD_NAME = "tsk_canonical_name";
+	public static final String NAME_FIELD_NAME = "tsk_name";
+	public static final String CREATION_FIELD_NAME = "tsk_creation";
+	public static final String UPDATED_FIELD_NAME = "tsk_updated";
+	public static final String MARSHALLED_CONFIG_FIELD_NAME = "tsk_config";
+	public static final String SCHEDULE_FIELD_NAME = "tsk_schedule";
+	public static final String LAST_RUN_ID_FIELD_NAME = "tsk_last_trs_id";
+	public static final String LAST_SUCCESS_RUN_ID_FIELD_NAME = "tsk_last_success_trs_id";
+	public static final String CURRENT_RUN_ID_FIELD_NAME = "tsk_current_trs_id";
 	
 	@Id
 	@GeneratedValue
@@ -59,7 +57,7 @@ public class TaskStatus implements CrudObject<Long> {
 	@Transient
 	private Map<String, String> config;
 	
-	@Column(name=CONFIG_FIELD_NAME)
+	@Column(name=MARSHALLED_CONFIG_FIELD_NAME)
 	private String marshalledConfig;
 	
 	@Column(name=SCHEDULE_FIELD_NAME)
@@ -67,31 +65,27 @@ public class TaskStatus implements CrudObject<Long> {
 	
 	@OneToOne
 	@JoinColumn(name=LAST_RUN_ID_FIELD_NAME)
-	private TaskRunStatus lastRun;
+	private RunStatus lastRun;
 
 	@OneToOne
 	@JoinColumn(name=CURRENT_RUN_ID_FIELD_NAME)
-	private TaskRunStatus currentRun;
+	private RunStatus currentRun;
 
 	@OneToOne
 	@JoinColumn(name=LAST_SUCCESS_RUN_ID_FIELD_NAME)
-	private TaskRunStatus lastSuccessRun;
+	private RunStatus lastSuccessRun;
 	
-	@ManyToOne
-	@JoinColumn(name=SYSYEM_ID_FIELD_NAME)
-	private SystemStatus systemStatus;
+	@OneToOne
+	@JoinColumn(name=SCHEDULER_STATUS_ID_FIELD_NAME)
+	private SchedulerStatus schedulerStatus;
 	
 	@ForeignCollectionField
-	private ForeignCollection<TaskRunStatus> taskRuns;
-	
-	@Transient
-	private List<TaskRunStatus> runs;
+	private ForeignCollection<RunStatus> taskRuns;
 	
 	@Transient
 	private Date nextRunTime;
 
 	public TaskStatus() {
-		this.runs = new ArrayList<TaskRunStatus>();
 	}
 
 	@XmlElement(name="canonical_name")
@@ -132,6 +126,9 @@ public class TaskStatus implements CrudObject<Long> {
 		if(this.config == null && this.marshalledConfig != null) {
 			this.config = (Map<String, String>) SerializableUtils.deserializeBase64(this.marshalledConfig);
 		}
+		if(this.config == null) {
+			this.config = new HashMap<String, String>();
+		}
 		return config;
 	}
 
@@ -165,12 +162,12 @@ public class TaskStatus implements CrudObject<Long> {
 	}
 	
 	@XmlTransient
-	public SystemStatus getSystemStatus() {
-		return systemStatus;
+	public SchedulerStatus getSchedulerStatus() {
+		return schedulerStatus;
 	}
 
-	public void setSystemStatus(SystemStatus systemStatus) {
-		this.systemStatus = systemStatus;
+	public void setSchedulerStatus(SchedulerStatus schedulerStatus) {
+		this.schedulerStatus = schedulerStatus;
 	}
 	
 	@XmlElement(name="next_run_time")
@@ -183,47 +180,38 @@ public class TaskStatus implements CrudObject<Long> {
 	}
 
 	@XmlElement(name="last_run")
-	public TaskRunStatus getLastRun() {
+	public RunStatus getLastRun() {
 		return lastRun;
 	}
 
-	public void setLastRun(TaskRunStatus lastRun) {
+	public void setLastRun(RunStatus lastRun) {
 		this.lastRun = lastRun;
 	}
 
 	@XmlElement(name="current_run")
-	public TaskRunStatus getCurrentRun() {
+	public RunStatus getCurrentRun() {
 		return currentRun;
 	}
 
-	public void setCurrentRun(TaskRunStatus currentRun) {
+	public void setCurrentRun(RunStatus currentRun) {
 		this.currentRun = currentRun;
 	}
 
 	@XmlElement(name="last_success_run")
-	public TaskRunStatus getLastSuccessRun() {
+	public RunStatus getLastSuccessRun() {
 		return lastSuccessRun;
 	}
 
-	public void setLastSuccessRun(TaskRunStatus lastSuccessRun) {
+	public void setLastSuccessRun(RunStatus lastSuccessRun) {
 		this.lastSuccessRun = lastSuccessRun;
 	}
 
 	@XmlTransient
-	public ForeignCollection<TaskRunStatus> getTaskRuns() {
+	public ForeignCollection<RunStatus> getTaskRuns() {
 		return taskRuns;
 	}
 
-	public void setTaskRuns(ForeignCollection<TaskRunStatus> taskRuns) {
+	public void setTaskRuns(ForeignCollection<RunStatus> taskRuns) {
 		this.taskRuns = taskRuns;
 	}
-
-	public List<TaskRunStatus> getRuns() {
-		return runs;
-	}
-
-	public void setRuns(List<TaskRunStatus> runs) {
-		this.runs = runs;
-	}
-
 }

@@ -1,6 +1,5 @@
 package it.netgrid.lovelace.api;
 
-import java.sql.SQLException;
 import java.util.Locale;
 
 import com.cronutils.descriptor.CronDescriptor;
@@ -13,23 +12,22 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
-import com.j256.ormlite.dao.Dao;
 
 import it.netgrid.commons.data.CrudService;
-import it.netgrid.lovelace.model.TaskRunStatus;
-import it.netgrid.lovelace.model.SystemStatus;
+import it.netgrid.lovelace.model.RunStatus;
+import it.netgrid.lovelace.model.SchedulerStatus;
 import it.netgrid.lovelace.model.TaskStatus;
-import it.netgrid.lovelace.model.RunStepStatus;
+import it.netgrid.lovelace.model.StepStatus;
 
 public class ApiModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		bind(new TypeLiteral<CrudService<SystemStatus, Long>>() {}).to(SystemStatusCrudService.class).in(Singleton.class);
+		bind(new TypeLiteral<CrudService<SchedulerStatus, Long>>() {}).to(SchedulerStatusCrudService.class).in(Singleton.class);
 		bind(new TypeLiteral<CrudService<TaskStatus, Long>>() {}).to(TaskStatusCrudService.class).in(Singleton.class);
-		bind(new TypeLiteral<CrudService<TaskRunStatus, Long>>() {}).to(TaskRunStatusCrudService.class).in(Singleton.class);
-		bind(new TypeLiteral<CrudService<RunStepStatus, Long>>() {}).to(RunStepStatusCrudService.class).in(Singleton.class);
-		bind(RunStatusService.class).to(RunStatusServiceImpl.class).in(Singleton.class);
+		bind(new TypeLiteral<CrudService<RunStatus, Long>>() {}).to(RunStatusCrudService.class).in(Singleton.class);
+		bind(new TypeLiteral<CrudService<StepStatus, Long>>() {}).to(StepStatusCrudService.class).in(Singleton.class);
+		bind(StepService.class).to(StepServiceImpl.class).in(Singleton.class);
 	}
 
 	@Provides
@@ -54,10 +52,5 @@ public class ApiModule extends AbstractModule {
 	@Singleton
 	public CronParser getCronParser(CronDefinition definition) {
 		return new CronParser(definition);
-	}
-	
-	@Provides
-	public SystemStatus getSystemStatus(Dao<SystemStatus,Long> systemStatusDao) throws SQLException {
-		return systemStatusDao.queryForId(SystemStatusCrudService.DEFAULT_SYSTEM_ID);
 	}
 }

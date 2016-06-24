@@ -30,6 +30,9 @@ import it.netgrid.lovelace.quartz.GuiceJobFactory;
 import it.netgrid.lovelace.quartz.LovelaceSchedulerListener;
 import it.netgrid.lovelace.quartz.RunStatusJobListener;
 import it.netgrid.lovelace.quartz.RunStatusTriggerListener;
+import it.netgrid.lovelace.rest.IllegalArgumentExceptionMapper;
+import it.netgrid.lovelace.rest.NullPointerExceptionMapper;
+import it.netgrid.lovelace.rest.SQLExceptionMapper;
 
 public class Main {
 	
@@ -57,22 +60,12 @@ public class Main {
 			
 			// Create the server
 			Main.server = new Server(new InetSocketAddress(Main.config.getBindAddress(), Main.config.getBindPort()));
-
-			// Create a servlet context and add the jersey servlet
 			ServletContextHandler sch = new ServletContextHandler(server, "/");
-	
-			// Add our Guice listener that includes our bindings
 			sch.addEventListener(new GuiceConfig(Main.injector));
-	
-			// Then add GuiceFilter and configure the server to
-			// reroute all requests through this filter.
 			sch.addFilter(GuiceFilter.class, "/*", null);
-	
-			// Must add DefaultServlet for embedded Jetty.
-			// Failing to do this will cause 404 errors.
 			sch.addServlet(DefaultServlet.class, "/");
 	
-			// Start the server
+			// Start services
 			try {
 				Main.scheduler.start();
 				Main.server.start();
@@ -96,7 +89,7 @@ public class Main {
 			protected void configureServlets() {
 				install(new ModelModule());
 				install(new ApiModule());
-
+				
 				// Set init params for Jersey
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("com.sun.jersey.config.property.packages", RESOURCES_PACKAGES);
@@ -104,6 +97,11 @@ public class Main {
 
 				// Route all requests through GuiceContainer
 				serve("/*").with(GuiceContainer.class, params);
+				
+				// This bindings must be after the "serve" call
+				bind(SQLExceptionMapper.class);
+				bind(IllegalArgumentExceptionMapper.class);
+				bind(NullPointerExceptionMapper.class);
 			}
 			
 			@Provides

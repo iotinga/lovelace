@@ -1,21 +1,38 @@
 package it.netgrid.lovelace.quartz;
 
+import java.sql.SQLException;
+import java.util.Date;
+
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerListener;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import it.netgrid.commons.data.CrudService;
+import it.netgrid.lovelace.Configuration;
+import it.netgrid.lovelace.model.SchedulerStatus;
+
 @Singleton
 public class LovelaceSchedulerListener implements SchedulerListener {
+	
+	private final static Logger log = LoggerFactory.getLogger(LovelaceSchedulerListener.class);
+	
+	private final CrudService<SchedulerStatus, Long> schedulerStatusService;
+	private final Configuration config;
 
 	@Inject
-	public LovelaceSchedulerListener() {
-		
+	public LovelaceSchedulerListener(
+			Configuration config,
+			CrudService<SchedulerStatus, Long> schedulerStatusService) {
+		this.schedulerStatusService = schedulerStatusService;
+		this.config = config;
 	}
 	
 	@Override
@@ -110,8 +127,15 @@ public class LovelaceSchedulerListener implements SchedulerListener {
 
 	@Override
 	public void schedulerStarted() {
-		// TODO Auto-generated method stub
-
+		try {
+			SchedulerStatus status = this.schedulerStatusService.read(this.config.getSchedulerId());
+			status.setActiveFrom(new Date());
+			this.schedulerStatusService.update(status);
+		} catch (IllegalArgumentException e) {
+			log.error("Unable to update scheduler status");
+		} catch (SQLException e) {
+			log.error("Unable to update scheduler status");
+		}
 	}
 
 	@Override

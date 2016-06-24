@@ -4,7 +4,6 @@ import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,9 +25,9 @@ import com.j256.ormlite.table.TableUtils;
 
 import io.codearte.jfairy.Fairy;
 import it.netgrid.commons.SerializableUtils;
-import it.netgrid.lovelace.model.RunStepStatus;
-import it.netgrid.lovelace.model.SystemStatus;
-import it.netgrid.lovelace.model.TaskRunStatus;
+import it.netgrid.lovelace.model.StepStatus;
+import it.netgrid.lovelace.model.SchedulerStatus;
+import it.netgrid.lovelace.model.RunStatus;
 import it.netgrid.lovelace.model.TaskStatus;
 import it.netgrid.lovelace.tasks.SleepingTask;
 
@@ -36,9 +35,9 @@ public class FullRandomPersistenceTestHandler implements PersistenceTestHandler 
 
 	private static final String TRIGGER_NAME_FORMAT = "%s#TRIGGER";
 	
-	private final Dao<RunStepStatus, Long> runStepStatusDao;
-	private final Dao<SystemStatus, Long> systemStatusDao;
-	private final Dao<TaskRunStatus, Long> taskRunStatusDao;
+	private final Dao<StepStatus, Long> runStepStatusDao;
+	private final Dao<SchedulerStatus, Long> systemStatusDao;
+	private final Dao<RunStatus, Long> taskRunStatusDao;
 	private final Dao<TaskStatus, Long> taskStatusDao;
 	private final ConnectionSource connectionSource;
 	private final Scheduler scheduler;
@@ -48,9 +47,9 @@ public class FullRandomPersistenceTestHandler implements PersistenceTestHandler 
 	@Inject
 	public FullRandomPersistenceTestHandler( 
 			ConnectionSource connectionSource,
-			Dao<RunStepStatus, Long> runStepStatusDao,
-			Dao<SystemStatus, Long> systemStatusDao,
-			Dao<TaskRunStatus, Long> taskRunStatusDao,
+			Dao<StepStatus, Long> runStepStatusDao,
+			Dao<SchedulerStatus, Long> systemStatusDao,
+			Dao<RunStatus, Long> taskRunStatusDao,
 			Dao<TaskStatus, Long> taskStatusDao, 
 			Fairy fairy,
 			Scheduler scheduler,
@@ -68,9 +67,9 @@ public class FullRandomPersistenceTestHandler implements PersistenceTestHandler 
 	@Override
 	public void setup() {
 		try {
-			TableUtils.createTableIfNotExists(connectionSource, RunStepStatus.class);
-			TableUtils.createTableIfNotExists(connectionSource, SystemStatus.class);
-			TableUtils.createTableIfNotExists(connectionSource, TaskRunStatus.class);
+			TableUtils.createTableIfNotExists(connectionSource, StepStatus.class);
+			TableUtils.createTableIfNotExists(connectionSource, SchedulerStatus.class);
+			TableUtils.createTableIfNotExists(connectionSource, RunStatus.class);
 			TableUtils.createTableIfNotExists(connectionSource, TaskStatus.class);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -80,9 +79,9 @@ public class FullRandomPersistenceTestHandler implements PersistenceTestHandler 
 	@Override
 	public void destroy() {
 		try {
-			TableUtils.dropTable(connectionSource, RunStepStatus.class, true);
-			TableUtils.dropTable(connectionSource, SystemStatus.class, true);
-			TableUtils.dropTable(connectionSource, TaskRunStatus.class, true);
+			TableUtils.dropTable(connectionSource, StepStatus.class, true);
+			TableUtils.dropTable(connectionSource, SchedulerStatus.class, true);
+			TableUtils.dropTable(connectionSource, RunStatus.class, true);
 			TableUtils.dropTable(connectionSource, TaskStatus.class, true);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -99,14 +98,13 @@ public class FullRandomPersistenceTestHandler implements PersistenceTestHandler 
 	}
 	
 	public void createSystem() throws SQLException {
-		SystemStatus system = new SystemStatus();
+		SchedulerStatus system = new SchedulerStatus();
 		system.setActiveFrom(new Date());
-		system.setUptime(BigDecimal.TEN);
 		this.systemStatusDao.create(system);
 		this.createTask(system);
 	}
 	
-	public void createTask(SystemStatus system) throws SQLException {
+	public void createTask(SchedulerStatus system) throws SQLException {
 		Map<String, String> config = new HashMap<String, String>();
 		config.put(SleepingTask.SLEEP_MILLIS_FIELD_NAME, "10000");
 		String configString = SerializableUtils.serializeBase64(config);
@@ -117,7 +115,7 @@ public class FullRandomPersistenceTestHandler implements PersistenceTestHandler 
 		task.setMarshalledConfig(configString);
 		task.setName(this.fairy.textProducer().latinSentence());
 		task.setSchedule("0 0 12 1/1 * ? *");
-		task.setSystemStatus(system);
+		task.setSchedulerStatus(system);
 		task.setUpdated(new Date());
 		this.taskStatusDao.create(task);
 		

@@ -1,6 +1,5 @@
 package it.netgrid.lovelace.model;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,20 +19,16 @@ import com.j256.ormlite.field.ForeignCollectionField;
 import it.netgrid.commons.data.CrudObject;
 
 @XmlRootElement
-@Entity(name="system_status")
-public class SystemStatus implements CrudObject<Long> {
+@Entity(name="scheduler_status")
+public class SchedulerStatus implements CrudObject<Long> {
 	
-	public static final String ID_FIELD_NAME = "sys_id";
-	public static final String UPTIME_FIELD_NAME = "sys_uptime";
-	public static final String ACTIVE_FROM_FIELD_NAME = "sys_active_from";
+	public static final String ID_FIELD_NAME = "sch_id";
+	public static final String ACTIVE_FROM_FIELD_NAME = "sch_active_from";
 
 	@Id
 	@GeneratedValue
 	@Column(name=ID_FIELD_NAME)
 	private Long id;
-	
-	@Column(name=UPTIME_FIELD_NAME)
-	private BigDecimal uptime;
 	
 	@Column(name=ACTIVE_FROM_FIELD_NAME)
 	private Date activeFrom;
@@ -44,16 +39,8 @@ public class SystemStatus implements CrudObject<Long> {
 	@ForeignCollectionField
 	private ForeignCollection<TaskStatus> tasksStatus;
 	
-	public SystemStatus() {
+	public SchedulerStatus() {
 		this.tasks = new ArrayList<TaskStatus>();
-	}
-
-	public BigDecimal getUptime() {
-		return uptime;
-	}
-
-	public void setUptime(BigDecimal uptime) {
-		this.uptime = uptime;
 	}
 
 	@XmlElement(name="active_from")

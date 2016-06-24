@@ -1,12 +1,10 @@
 package it.netgrid.lovelace;
 
-import org.quartz.Job;
+import org.quartz.InterruptableJob;
 
-import it.netgrid.lovelace.model.TaskStatus;
-
-public interface Task extends Job {
+public interface Task extends InterruptableJob {
 	
-	public TaskStatus getStatus();
+	public String getFirstStepName();
 	public int getStepsCount();
 	
 }

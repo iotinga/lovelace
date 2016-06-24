@@ -15,8 +15,10 @@ import com.j256.ormlite.dao.Dao;
 import io.codearte.jfairy.Fairy;
 import it.netgrid.lovelace.LovelaceTestEnv;
 import it.netgrid.lovelace.PersistenceTestHandler;
-import it.netgrid.lovelace.model.RunStepStatus;
-import it.netgrid.lovelace.model.TaskRunStatus;
+import it.netgrid.lovelace.model.ExecutionResult;
+import it.netgrid.lovelace.model.ExecutionState;
+import it.netgrid.lovelace.model.StepStatus;
+import it.netgrid.lovelace.model.RunStatus;
 import it.netgrid.lovelace.model.TaskStatus;
 
 public class RunStatusServiceImplTest {
@@ -31,16 +33,16 @@ public class RunStatusServiceImplTest {
 	private PersistenceTestHandler persistence;
 	
 	@Inject
-	private RunStatusServiceImpl classUnderTest;
+	private StepServiceImpl classUnderTest;
 	
 	@Inject
 	private Dao<TaskStatus, Long> taskStatusDao;
 	
 	@Inject
-	private Dao<TaskRunStatus, Long> taskRunDao;
+	private Dao<RunStatus, Long> taskRunDao;
 	
 	@Inject
-	private Dao<RunStepStatus, Long> runStepDao;
+	private Dao<StepStatus, Long> runStepDao;
 	
 	@Before
 	public void setUp() {
@@ -56,10 +58,10 @@ public class RunStatusServiceImplTest {
 	@Test
 	public void testRunStatusCreationOnStart() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
-		RunStepStatus step = this.classUnderTest.start(task, "start");
+		StepStatus step = this.classUnderTest.start(task, "start", 1);
 	
 		task = this.taskStatusDao.queryForId((long)1);
-		TaskRunStatus runStatus = taskRunDao.queryForId(step.getRunStatus().getId());
+		RunStatus runStatus = taskRunDao.queryForId(step.getRunStatus().getId());
 		
 		assertEquals(runStatus.getId(), task.getCurrentRun().getId());
 	}
@@ -67,12 +69,104 @@ public class RunStatusServiceImplTest {
 	@Test
 	public void testRunStepStatusCreationOnStart() throws SQLException {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
-		RunStepStatus step = this.classUnderTest.start(task, "start");
+		StepStatus step = this.classUnderTest.start(task, "start", 1);
 		
-		RunStepStatus newStep = this.runStepDao.queryForId(step.getId());
+		StepStatus newStep = this.runStepDao.queryForId(step.getId());
 		
 		assertNotNull(newStep);
 		assertNotNull(newStep.getRunStatus());
 		assertNotNull(newStep.getRunStatus().getId());
+	}
+	
+	@Test
+	public void testNextStepNewStepCreation() throws SQLException {
+		TaskStatus task = this.taskStatusDao.queryForId((long)1);
+		StepStatus currentStep = this.classUnderTest.start(task, "start", 1);
+		
+		ExecutionResult result = fairy.baseProducer().randomElement(ExecutionResult.values());
+		String stepName = fairy.textProducer().latinSentence();
+		StepStatus nextStep = this.classUnderTest.nextStep(task, result, stepName);
+		
+		taskStatusDao.refresh(task);
+		taskRunDao.refresh(task.getCurrentRun());
+		
+		assertNotNull(nextStep.getId());
+		assertNotEquals(currentStep.getId(), nextStep.getId());
+		assertEquals(stepName, nextStep.getName());
+		assertEquals(nextStep.getId(), task.getCurrentRun().getCurrentStep().getId());
+
+	}
+	
+	@Test
+	public void testNextStepOldStepClosed() throws SQLException {
+		TaskStatus task = this.taskStatusDao.queryForId((long)1);
+		StepStatus currentStep = this.classUnderTest.start(task, "start", 1);
+		
+		ExecutionResult result = fairy.baseProducer().randomElement(ExecutionResult.values());
+		String stepName = fairy.textProducer().latinSentence();
+		this.classUnderTest.nextStep(task, result, stepName);
+		
+		StepStatus oldStep = this.runStepDao.queryForId(currentStep.getId());
+		
+		assertEquals(result, oldStep.getResult());
+	}
+	
+	@Test
+	public void testEndTask() throws SQLException {
+		TaskStatus task = this.taskStatusDao.queryForId((long)1);
+		StepStatus firstStep = this.classUnderTest.start(task, "start", 1);
+		taskRunDao.refresh(task.getCurrentRun());
+		RunStatus currentRun = task.getCurrentRun();
+
+		ExecutionResult taskResult = fairy.baseProducer().randomElement(ExecutionResult.values());
+		ExecutionResult stepResult = fairy.baseProducer().randomElement(ExecutionResult.values());
+		StepStatus lastStep = this.classUnderTest.end(task, stepResult, taskResult);
+		
+		task = this.taskStatusDao.queryForId((long)1);
+		taskRunDao.refresh(task.getLastRun());
+		RunStatus lastRun = task.getLastRun();
+		
+
+		assertNull(task.getCurrentRun());
+		assertEquals(currentRun.getId(), lastRun.getId());
+		assertEquals(ExecutionState.END, lastRun.getState());
+		
+		assertEquals(firstStep.getId(), lastStep.getId());
+		assertEquals(stepResult, lastStep.getResult());
+		assertEquals(taskResult, task.getLastRun().getResult());
+	}
+	
+	@Test
+	public void testEndSuccessfulTask() throws SQLException {
+		TaskStatus task = this.taskStatusDao.queryForId((long)1);
+		this.classUnderTest.start(task, "start", 1);
+
+		this.classUnderTest.end(task, ExecutionResult.SUCCESS, ExecutionResult.SUCCESS);
+		
+		task = this.taskStatusDao.queryForId((long)1);
+		taskRunDao.refresh(task.getLastRun());
+		taskRunDao.refresh(task.getLastSuccessRun());
+		
+		assertNotNull(task.getLastSuccessRun());
+		assertEquals(task.getLastRun().getId(), task.getLastSuccessRun().getId());
+	}
+
+	
+	@Test
+	public void testEndErrorTask() throws SQLException {
+		TaskStatus task = this.taskStatusDao.queryForId((long)1);
+		this.classUnderTest.start(task, "start", 1);
+
+		this.classUnderTest.end(task, ExecutionResult.ERROR, ExecutionResult.ERROR);
+		
+		task = this.taskStatusDao.queryForId((long)1);
+		taskRunDao.refresh(task.getLastRun());
+		taskRunDao.refresh(task.getLastSuccessRun());
+		
+		if(task.getLastSuccessRun() == null) {
+			assertNotNull(task.getLastRun());
+		} else {
+			assertNotEquals(task.getLastRun().getId(), task.getLastSuccessRun().getId());
+		}
 	}
 }
