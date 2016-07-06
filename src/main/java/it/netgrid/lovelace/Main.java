@@ -6,16 +6,11 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.DispatcherType;
 
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.quartz.Scheduler;
@@ -30,8 +25,6 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.google.inject.servlet.GuiceFilter;
-import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
 import com.squarespace.jersey2.guice.JerseyGuiceModule;
 import com.squarespace.jersey2.guice.JerseyGuiceUtils;
@@ -99,22 +92,14 @@ public class Main {
 		    // Initialize filters
 		    /*
 		     * 
-		     *     <servlet>
-			 *	        <servlet-name>Lovelace</servlet-name>
-			 *	        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-			 *	        <init-param>
-			 *	            <param-name>javax.ws.rs.Application</param-name>
-			 *	            <param-value>it.netgrid.lovelace.Application</param-value>
-			 *	        </init-param>
-			 *	        <load-on-startup>1</load-on-startup>
-			 *	    </servlet>
-			 *	    <servlet-mapping>
-			 *	        <servlet-name>Lovelace</servlet-name>
-			 *	        <url-pattern>/*</url-pattern>
-			 *	    </servlet-mapping>
+		     *         <filter>
+			 *		        <filter-name>guice-filter</filter-name>
+			 *		        <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
+			 *		    </filter>
 		     * 
 		     */
-		    FilterHolder fh = webAppContext.addFilter(com.google.inject.servlet.GuiceFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+		    // addFilter returns FilterHolder object that can be used to specify initialitaion parameters of this filter
+		    webAppContext.addFilter(com.google.inject.servlet.GuiceFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
 		    
 		    // Setup listener
 		    /*
