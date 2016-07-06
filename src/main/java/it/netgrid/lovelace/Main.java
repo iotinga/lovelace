@@ -4,25 +4,30 @@ import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+
+import javax.servlet.DispatcherType;
 
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.google.inject.servlet.GuiceFilter;
-import com.sun.jersey.guice.JerseyServletModule;
-import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
+import com.google.inject.servlet.ServletModule;
+import com.squarespace.jersey2.guice.JerseyGuiceModule;
+import com.squarespace.jersey2.guice.JerseyGuiceUtils;
 
 import it.netgrid.lovelace.api.ApiModule;
 import it.netgrid.lovelace.model.ModelModule;
@@ -38,19 +43,18 @@ public class Main {
 	
 	private static final Logger log = LoggerFactory.getLogger(Main.class);
 	
-	private static final String RESOURCES_PACKAGES = "it.netgrid.lovelace.rest";
 	private static Configuration config;
 	private static Scheduler scheduler;
 	private static Server server;
 	private static Injector injector;
 	
 	public static void main(String[] args) throws IOException {
+		
 		if(args.length > 1) {
 			Main.config = new PropertiesConfigurationImpl(args[1]);
 		} else {
 			Main.config = new PropertiesConfigurationImpl();
 		}
-		
 		
 		try {
 			// Create scheduler
@@ -60,10 +64,63 @@ public class Main {
 			
 			// Create the server
 			Main.server = new Server(new InetSocketAddress(Main.config.getBindAddress(), Main.config.getBindPort()));
-			ServletContextHandler sch = new ServletContextHandler(server, "/");
-			sch.addEventListener(new GuiceConfig(Main.injector));
-			sch.addFilter(GuiceFilter.class, "/*", null);
-			sch.addServlet(DefaultServlet.class, "/");
+			JerseyGuiceUtils.install(injector);
+			
+			// Setup web app context
+			WebAppContext webAppContext = new WebAppContext();
+			webAppContext.setContextPath("/");
+		    
+			// Initialize servlet
+		    /*
+		     *     <servlet>
+			 *	        <servlet-name>Lovelace</servlet-name>
+			 *	        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+			 *	        <init-param>
+			 *	            <param-name>javax.ws.rs.Application</param-name>
+			 *	            <param-value>it.netgrid.lovelace.Application</param-value>
+			 *	        </init-param>
+			 *	        <load-on-startup>1</load-on-startup>
+			 *	    </servlet>
+			 *	    <servlet-mapping>
+			 *	        <servlet-name>Lovelace</servlet-name>
+			 *	        <url-pattern>/*</url-pattern>
+			 *	    </servlet-mapping>
+		     */
+		    ServletHolder sh = webAppContext.addServlet(org.glassfish.jersey.servlet.ServletContainer.class,"/*");
+		    sh.setInitParameter("javax.ws.rs.Application", "it.netgrid.lovelace.Application");
+		    
+		    // Initialize filters
+		    /*
+		     * 
+		     *         <filter>
+			 *		        <filter-name>guice-filter</filter-name>
+			 *		        <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
+			 *		    </filter>
+		     * 
+		     */
+		    // addFilter returns FilterHolder object that can be used to specify initialitaion parameters of this filter
+		    webAppContext.addFilter(com.google.inject.servlet.GuiceFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
+		    
+		    // Setup listener
+		    /*
+		     *     <listener>
+			 *	        <listener-class>it.netgrid.lovelace.GuiceConfig</listener-class>
+			 *	    </listener>
+		     */
+		    webAppContext.addEventListener(Main.injector.getInstance(GuiceConfig.class));
+		    
+			/* Important: Use getResource */
+		    //String webxmlLocation = Main.class.getResource("/webapp/WEB-INF/web.xml").toString();
+		    //webAppContext.setDescriptor("WEB-INF/web.xml");
+
+		    /* Important: Use getResource */
+		    //String resLocation = Main.class.getResource("/webapp").toString();
+			//webAppContext.setResourceBase("src//webapp");
+		    //webAppContext.setParentLoaderPriority(true);
+		    // System temp directory as resource base. This package doesn't provide resources
+		    webAppContext.setResourceBase(System.getProperty("java.io.tmpdir"));
+		    
+		    server.setHandler(webAppContext);
 	
 			// Start services
 			try {
@@ -82,29 +139,29 @@ public class Main {
 		}
 	}		
 	
-	private static Injector createInjector() {
-		return Guice.createInjector(new JerseyServletModule() {
-					
-			@Override
-			protected void configureServlets() {
-				install(new ModelModule());
-				install(new ApiModule());
-				
-				// Set init params for Jersey
-				Map<String, String> params = new HashMap<String, String>();
-				params.put("com.sun.jersey.config.property.packages", RESOURCES_PACKAGES);
-				params.put("com.sun.jersey.api.json.POJOMappingFeature", "true");
+	protected static Injector createInjector() {
+		
+		List<Module> modules = new ArrayList<>();
 
-				// Route all requests through GuiceContainer
-				serve("/*").with(GuiceContainer.class, params);
-				
+		  modules.add(new JerseyGuiceModule("__HK2_Generated_0"));
+		  modules.add(new ServletModule() {
+			 @Override
+			 protected void configureServlets() {
 				// This bindings must be after the "serve" call
 				bind(SQLExceptionMapper.class);
 				bind(IllegalArgumentExceptionMapper.class);
 				bind(NullPointerExceptionMapper.class);
-			}
-			
-			@Provides
+			 }
+		  });
+		  modules.add(new ModelModule());
+		  modules.add(new ApiModule());
+		  modules.add(new AbstractModule() {
+		    @Override
+		    protected void configure() {
+
+		    }
+		    
+		    @Provides
 			@Singleton
 			public Configuration getConfig() {
 				return config;
@@ -125,7 +182,8 @@ public class Main {
 			public Server getServer() {
 				return server;
 			}
-					
-		});
+		  });
+		
+		return Guice.createInjector(modules);
 	}
 }

@@ -48,11 +48,6 @@ public class PropertiesConfigurationImpl implements Configuration {
 		if(loadPropertiesFromFile(DEFAULT_CONFIG_PROPERTIES_PATH)) return;
 		loadPropertiesAsResource(DEFAULT_CONFIG_PROPERTIES_RESOURCE);
 	}
-
-	@Override
-	public String getJdbcConnectionUrl() {
-		return this.getProperties().getProperty(KEY_JDBC_CONNECTION_URL, DEFAULT_JDBC_CONNECITON_URL);
-	}
 	
 	@Override
 	public Properties getProperties() {
@@ -98,6 +93,11 @@ public class PropertiesConfigurationImpl implements Configuration {
 			}
 		}
 		return properties != null;
+	}
+
+	@Override
+	public String getJdbcConnectionUrl() {
+		return this.getProperties().getProperty(KEY_JDBC_CONNECTION_URL, DEFAULT_JDBC_CONNECITON_URL);
 	}
 
 	@Override
