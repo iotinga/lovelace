@@ -43,13 +43,13 @@ public class Main {
 	
 	private static final Logger log = LoggerFactory.getLogger(Main.class);
 	
-	public static final String RESOURCES_PACKAGES = "it.netgrid.lovelace.rest";
 	private static Configuration config;
 	private static Scheduler scheduler;
 	private static Server server;
-	public static Injector injector;
+	private static Injector injector;
 	
 	public static void main(String[] args) throws IOException {
+		
 		if(args.length > 1) {
 			Main.config = new PropertiesConfigurationImpl(args[1]);
 		} else {
@@ -60,11 +60,11 @@ public class Main {
 			// Create scheduler
 			Main.scheduler = StdSchedulerFactory.getDefaultScheduler();
 			Main.injector = Main.createInjector();
-			JerseyGuiceUtils.install(injector);
 			Main.scheduler.setJobFactory(Main.injector.getInstance(GuiceJobFactory.class));
 			
 			// Create the server
 			Main.server = new Server(new InetSocketAddress(Main.config.getBindAddress(), Main.config.getBindPort()));
+			JerseyGuiceUtils.install(injector);
 			
 			// Setup web app context
 			WebAppContext webAppContext = new WebAppContext();
@@ -107,7 +107,7 @@ public class Main {
 			 *	        <listener-class>it.netgrid.lovelace.GuiceConfig</listener-class>
 			 *	    </listener>
 		     */
-		    webAppContext.addEventListener(new GuiceConfig(injector));
+		    webAppContext.addEventListener(Main.injector.getInstance(GuiceConfig.class));
 		    
 			/* Important: Use getResource */
 		    //String webxmlLocation = Main.class.getResource("/webapp/WEB-INF/web.xml").toString();
@@ -140,6 +140,7 @@ public class Main {
 	}		
 	
 	protected static Injector createInjector() {
+		
 		List<Module> modules = new ArrayList<>();
 
 		  modules.add(new JerseyGuiceModule("__HK2_Generated_0"));

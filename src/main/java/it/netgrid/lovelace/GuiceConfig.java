@@ -1,27 +1,21 @@
 package it.netgrid.lovelace;
 
-import org.eclipse.jetty.util.log.Log;
-
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 
 public class GuiceConfig extends GuiceServletContextListener {
 	
-    public static Injector injector;
+    private final  Injector injector;
 	
-	public GuiceConfig() {
-		if(injector!=null){
-			Log.getLog().debug("Injector already configured");
-		}
-	}
-	
+    @Inject
 	public GuiceConfig(Injector _injector) {
 		injector = _injector;
 	}
 
 	@Override
 	protected Injector getInjector() {
-		return Main.injector;
+		return injector;
 	}
 
 }
