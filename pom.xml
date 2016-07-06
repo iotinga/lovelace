@@ -21,18 +21,19 @@
 		<lang3.version>3.4</lang3.version>
 		<cron.version>3.1.6</cron.version>
 		<quartz.version>2.2.1</quartz.version>
+		<jersey2-guice.version>1.0.6</jersey2-guice.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 		    <groupId>com.squarespace.jersey2-guice</groupId>
 		    <artifactId>0-jersey2-guice-spi</artifactId>
-		    <version>1.0.6</version>
+		    <version>${jersey2-guice.version}</version>
 		</dependency>
 		<dependency>
 		  <groupId>com.squarespace.jersey2-guice</groupId>
 		  <artifactId>jersey2-guice-impl</artifactId>
-		  <version>1.0.6</version>
+		  <version>${jersey2-guice.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.glassfish.hk2/guice-bridge -->
 		<dependency>
@@ -49,12 +50,12 @@
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
-			<version>2.2.1</version>
+			<version>${quartz.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz-jobs</artifactId>
-			<version>2.2.1</version>
+			<version>${quartz.version}</version>
 		</dependency>
 
 		<dependency>
@@ -83,12 +84,12 @@
 			<artifactId>jersey-client</artifactId>
 			<version>${jersey.version}</version>
 		</dependency>
-<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-json-jackson -->
-<dependency>
-    <groupId>org.glassfish.jersey.media</groupId>
-    <artifactId>jersey-media-json-jackson</artifactId>
-    <version>2.22.2</version>
-</dependency>
+		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-json-jackson -->
+		<dependency>
+		    <groupId>org.glassfish.jersey.media</groupId>
+		    <artifactId>jersey-media-json-jackson</artifactId>
+		    <version>${jersey.version}</version>
+		</dependency>
 		<!-- Jersey END -->
 		<dependency>
 			<groupId>com.google.inject</groupId>
@@ -99,17 +100,13 @@
 		<dependency>
 		    <groupId>com.google.inject.extensions</groupId>
 		    <artifactId>guice-multibindings</artifactId>
-		    <version>4.0</version>
-		</dependency>
-
-
-		
+		    <version>${guice.version}</version>
+		</dependency>		
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-servlet</artifactId>
 			<version>${jetty.version}</version>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-webapp</artifactId>
