@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.netgrid</groupId>
 	<artifactId>lovelace</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<name>Lovelace</name>
 	<description>A task scheduler with REST interface written in Java</description>
 
