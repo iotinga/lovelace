@@ -47,6 +47,7 @@ public class Main {
 	private static Scheduler scheduler;
 	private static Server server;
 	private static Injector injector;
+	private static List<Module> modules;
 	
 	public static void main(String[] args) throws IOException {
 		
@@ -55,7 +56,17 @@ public class Main {
 		} else {
 			Main.config = new PropertiesConfigurationImpl();
 		}
-		
+		Main.modules = new ArrayList<>();
+		Main.run();
+	}
+	
+	public static void mainWithInjectableModulesAndConfig(List<Module> modules, Configuration config) throws IOException {
+		Main.config = config;
+		Main.modules = modules;
+		Main.run();
+	}
+	
+	private static void run() throws IOException {
 		try {
 			// Create scheduler
 			Main.scheduler = StdSchedulerFactory.getDefaultScheduler();
@@ -139,12 +150,14 @@ public class Main {
 		}
 	}		
 	
+	protected static Scheduler getScheduler() {
+		return Main.scheduler;
+	}
+	
 	protected static Injector createInjector() {
-		
-		List<Module> modules = new ArrayList<>();
 
-		  modules.add(new JerseyGuiceModule("__HK2_Generated_0"));
-		  modules.add(new ServletModule() {
+		  Main.modules.add(new JerseyGuiceModule("__HK2_Generated_0"));
+		  Main.modules.add(new ServletModule() {
 			 @Override
 			 protected void configureServlets() {
 				// This bindings must be after the "serve" call
@@ -153,9 +166,9 @@ public class Main {
 				bind(NullPointerExceptionMapper.class);
 			 }
 		  });
-		  modules.add(new ModelModule());
-		  modules.add(new ApiModule());
-		  modules.add(new AbstractModule() {
+		  Main.modules.add(new ModelModule());
+		  Main.modules.add(new ApiModule());
+		  Main.modules.add(new AbstractModule() {
 		    @Override
 		    protected void configure() {
 
@@ -184,6 +197,6 @@ public class Main {
 			}
 		  });
 		
-		return Guice.createInjector(modules);
+		return Guice.createInjector(Main.modules);
 	}
 }
