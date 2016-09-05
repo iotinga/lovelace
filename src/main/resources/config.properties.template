@@ -1,0 +1,5 @@
+jdbcConnection=jdbc:h2:mem:lovelace?zeroDateTimeBehavior=convertToNull
+jdbcUsername=root
+jdbcPassword=root
+bindAddress=0.0.0.0
+bindPort=9099
