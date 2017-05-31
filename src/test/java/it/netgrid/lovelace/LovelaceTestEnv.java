@@ -13,15 +13,17 @@ import com.google.inject.Singleton;
 
 import io.codearte.jfairy.Fairy;
 import it.netgrid.lovelace.api.ApiModule;
-import it.netgrid.lovelace.model.ModelModule;
+import it.netgrid.lovelace.model.DaoModule;
+import it.netgrid.lovelace.model.JdbcConnectionModule;
 
 public class LovelaceTestEnv extends AbstractModule {
 
 	@Override
 	protected void configure() {
 		install(new GuiceBerryModule());
-		install(new ModelModule());
+		install(new DaoModule());
 		install(new ApiModule());
+		install(new JdbcConnectionModule());
 		
 		bind(PersistenceTestHandler.class).to(FullRandomPersistenceTestHandler.class).in(Singleton.class);
 	}
@@ -75,6 +77,11 @@ public class LovelaceTestEnv extends AbstractModule {
 			@Override
 			public Long getSchedulerId() {
 				return (long)1;
+			}
+
+			@Override
+			public boolean hasJdbcConnectionReuse() {
+				return false;
 			}
 		};
 	}
