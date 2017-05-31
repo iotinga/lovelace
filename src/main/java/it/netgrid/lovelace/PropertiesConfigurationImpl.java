@@ -22,6 +22,8 @@ public class PropertiesConfigurationImpl implements Configuration {
 	private static final String KEY_BIND_ADDRESS = "bindAddress";
 	private static final String KEY_BIND_PORT = "bindPort";
 	private static final String KEY_SCHEDULER_ID = "schedulerId";
+	private static final String KEY_JDBC_CONNECTION_REUSE = "jdbcConnectionReuse";
+	
 	
 	private static final String DEFAULT_QUARTZ_GROUP_NAME = "global";
 	private static final String DEFAULT_JDBC_CONNECITON_URL = "jdbc:h2:mem:lovelace?zeroDateTimeBehavior=convertToNull";
@@ -30,6 +32,7 @@ public class PropertiesConfigurationImpl implements Configuration {
 	private static final String DEFAULT_BIND_ADDRESS = "127.0.0.1";
 	private static final String DEFAULT_BIND_PORT = "9099";
 	private static final String DEFAULT_SCHEDULER_ID = "1";
+	private static final String DEFAULT_JDBC_CONNECTION_REUSE = "false";
 	
 	private Properties properties;	
 	
@@ -128,5 +131,10 @@ public class PropertiesConfigurationImpl implements Configuration {
 	@Override
 	public Long getSchedulerId() {
 		return Long.parseLong(this.getProperties().getProperty(KEY_SCHEDULER_ID, DEFAULT_SCHEDULER_ID));
+	}
+
+	@Override
+	public boolean hasJdbcConnectionReuse() {
+		return Boolean.getBoolean(this.getProperties().getProperty(KEY_JDBC_CONNECTION_REUSE, DEFAULT_JDBC_CONNECTION_REUSE));
 	}
 }

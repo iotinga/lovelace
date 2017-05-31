@@ -3,10 +3,17 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.netgrid</groupId>
 	<artifactId>lovelace</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	<name>Lovelace</name>
 	<description>A task scheduler with REST interface written in Java</description>
-
+	<licenses>
+	  <license>
+	    <name>Apache License, Version 2.0</name>
+	    <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+	    <distribution>repo</distribution>
+	    <comments>A business-friendly OSS license</comments>
+	  </license>
+    </licenses>
 	<properties>
 		<main.path>it.netgrid.lovelace.Main</main.path>
 		<slf4j.version>1.7.5</slf4j.version>
@@ -185,6 +192,17 @@
 			</resource>
 		</resources>
 		<plugins>
+		        <plugin>
+      <groupId>org.sonatype.plugins</groupId>
+      <artifactId>nexus-staging-maven-plugin</artifactId>
+      <version>1.6.3</version>
+      <extensions>true</extensions>
+      <configuration>
+        <serverId>ossrh</serverId>
+        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+      </configuration>
+    </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
@@ -267,4 +285,31 @@
 			</plugin>
 		</plugins>
 	</build>
+	<url>https://bitbucket.org/netgrid/lovelace</url>
+	<organization>
+		<name>Netgrid</name>
+		<url>http://www.netgrid.it</url>
+	</organization>
+	<scm>
+		<url>git@bitbucket.org:netgrid/lovelace.git</url>
+		<developerConnection>@netgrid</developerConnection>
+	</scm>
+		<developers>
+    <developer>
+      <id>matteo_bissoli</id>
+      <name>Matteo Bissoli</name>
+      <email>matteo.bissoli@netgrid.it</email>
+      <url>http://www.netgrid.it/matteo</url>
+      <organization>Netgrid</organization>
+      <organizationUrl>http://www.netgrid.it</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>Italy/Rome</timezone>
+      <properties>
+        <picUrl>http://www.netgrid.it/wp-content/uploads/2014/11/150624-091636-600x600.jpg</picUrl>
+      </properties>
+    </developer>
+  </developers>
 </project>

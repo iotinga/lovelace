@@ -30,7 +30,8 @@ import com.squarespace.jersey2.guice.JerseyGuiceModule;
 import com.squarespace.jersey2.guice.JerseyGuiceUtils;
 
 import it.netgrid.lovelace.api.ApiModule;
-import it.netgrid.lovelace.model.ModelModule;
+import it.netgrid.lovelace.model.DaoModule;
+import it.netgrid.lovelace.model.JdbcConnectionModule;
 import it.netgrid.lovelace.quartz.GuiceJobFactory;
 import it.netgrid.lovelace.quartz.LovelaceSchedulerListener;
 import it.netgrid.lovelace.quartz.RunStatusJobListener;
@@ -166,7 +167,12 @@ public class Main {
 				bind(NullPointerExceptionMapper.class);
 			 }
 		  });
-		  Main.modules.add(new ModelModule());
+		  
+		  if( ! Main.config.hasJdbcConnectionReuse()) {
+			  Main.modules.add(new JdbcConnectionModule());
+		  }
+		  
+		  Main.modules.add(new DaoModule());
 		  Main.modules.add(new ApiModule());
 		  Main.modules.add(new AbstractModule() {
 		    @Override

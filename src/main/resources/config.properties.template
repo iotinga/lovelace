@@ -3,3 +3,4 @@ jdbcUsername=root
 jdbcPassword=root
 bindAddress=0.0.0.0
 bindPort=9099
+jdbcConnectionReuse=false
