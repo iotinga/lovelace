@@ -11,4 +11,5 @@ public interface Configuration {
 	public String getJdbcUsername();
 	public String getJdbcPassword();
 	public String getQuartzGroupName();
+	public boolean hasJdbcConnectionReuse();
 }
