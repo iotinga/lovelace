@@ -151,5 +151,4 @@ public class TaskStatusResource {
 		
 		return retval;
 	}
-	
 }

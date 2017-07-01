@@ -8,6 +8,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 
 import it.netgrid.commons.data.CrudService;
+import it.netgrid.commons.ormlite.TemplateCrudService;
 import it.netgrid.lovelace.model.SchedulerStatus;
 import it.netgrid.lovelace.model.TaskStatus;
 
