@@ -13,6 +13,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 
+import it.netgrid.commons.data.BulkService;
 import it.netgrid.commons.data.CrudService;
 import it.netgrid.lovelace.model.RunStatus;
 import it.netgrid.lovelace.model.SchedulerStatus;
@@ -27,6 +28,7 @@ public class ApiModule extends AbstractModule {
 		bind(new TypeLiteral<CrudService<TaskStatus, Long>>() {}).to(TaskStatusCrudService.class).in(Singleton.class);
 		bind(new TypeLiteral<CrudService<RunStatus, Long>>() {}).to(RunStatusCrudService.class).in(Singleton.class);
 		bind(new TypeLiteral<CrudService<StepStatus, Long>>() {}).to(StepStatusCrudService.class).in(Singleton.class);
+		bind(new TypeLiteral<BulkService<TaskStatus, Long>>() {}).to(TaskStatusBulkService.class).in(Singleton.class);
 		bind(StepService.class).to(StepServiceImpl.class).in(Singleton.class);
 	}
 

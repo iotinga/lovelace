@@ -10,6 +10,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 
 import it.netgrid.lovelace.model.StepStatus;
+import it.netgrid.commons.ormlite.TemplateCrudService;
 import it.netgrid.lovelace.model.RunStatus;
 
 public class RunStatusCrudService extends TemplateCrudService<RunStatus, Long> {

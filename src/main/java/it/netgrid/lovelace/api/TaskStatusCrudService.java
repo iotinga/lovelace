@@ -27,6 +27,7 @@ import com.j256.ormlite.support.ConnectionSource;
 
 import it.netgrid.commons.SerializableUtils;
 import it.netgrid.commons.data.CrudService;
+import it.netgrid.commons.ormlite.TemplateCrudService;
 import it.netgrid.lovelace.Configuration;
 import it.netgrid.lovelace.model.SchedulerStatus;
 import it.netgrid.lovelace.model.RunStatus;
