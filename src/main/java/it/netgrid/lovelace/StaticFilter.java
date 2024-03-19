@@ -1,6 +1,6 @@
 package it.netgrid.lovelace;
 
-import com.google.inject.Singleton;
+import jakarta.inject.Singleton;
 import jakarta.servlet.*;
 import java.io.IOException;
 @Singleton

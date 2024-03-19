@@ -3,7 +3,7 @@ package it.netgrid.lovelace.api;
 import java.sql.SQLException;
 import java.util.Date;
 
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 

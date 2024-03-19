@@ -4,7 +4,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
-import com.google.inject.Singleton;
+import jakarta.inject.Singleton;
 
 import it.netgrid.lovelace.model.ErrorMessage;
 

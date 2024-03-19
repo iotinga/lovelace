@@ -14,7 +14,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 
 import it.netgrid.commons.data.CrudService;
 import it.netgrid.lovelace.model.StepStatus;

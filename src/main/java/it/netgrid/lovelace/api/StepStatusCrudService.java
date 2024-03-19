@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import org.apache.commons.lang3.Validate;
 
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 

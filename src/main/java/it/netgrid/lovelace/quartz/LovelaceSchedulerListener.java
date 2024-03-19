@@ -12,8 +12,8 @@ import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import it.netgrid.commons.data.CrudService;
 import it.netgrid.lovelace.Configuration;

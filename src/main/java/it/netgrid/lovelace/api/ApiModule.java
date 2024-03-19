@@ -9,7 +9,7 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.Singleton;
+import jakarta.inject.Singleton;
 import com.google.inject.TypeLiteral;
 
 import it.netgrid.commons.data.BulkService;

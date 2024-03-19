@@ -7,8 +7,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.Trigger;
 import org.quartz.Trigger.CompletedExecutionInstruction;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import com.j256.ormlite.dao.Dao;
 
 import it.netgrid.commons.data.CrudService;

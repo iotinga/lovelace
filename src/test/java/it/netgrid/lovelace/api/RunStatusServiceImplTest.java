@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.google.guiceberry.junit4.GuiceBerryRule;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import com.j256.ormlite.dao.Dao;
 
 import com.devskiller.jfairy.Fairy;

@@ -9,7 +9,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import com.google.guiceberry.GuiceBerryModule;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.Singleton;
+import jakarta.inject.Singleton;
 
 import com.devskiller.jfairy.Fairy;
 import it.netgrid.lovelace.api.ApiModule;
