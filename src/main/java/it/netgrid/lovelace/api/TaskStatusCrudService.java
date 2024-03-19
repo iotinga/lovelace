@@ -7,11 +7,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.cronutils.model.CronType;
-import com.cronutils.model.definition.CronDefinition;
-import com.cronutils.model.definition.CronDefinitionBuilder;
-import com.cronutils.parser.CronParser;
-import com.cronutils.validation.CronValidator;
 import org.apache.commons.lang3.Validate;
 import org.quartz.*;
 import org.slf4j.Logger;

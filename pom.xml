@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.netgrid</groupId>
 	<artifactId>lovelace</artifactId>
-	<version>0.0.5</version>
+	<version>0.0.6</version>
 	<name>Lovelace</name>
 	<description>A task scheduler with REST interface written in Java</description>
 	<licenses>
@@ -296,21 +296,21 @@
 			</resource>
 		</resources>
 		<plugins>
-		        <plugin>
-      <groupId>org.sonatype.plugins</groupId>
-      <artifactId>nexus-staging-maven-plugin</artifactId>
-      <version>1.6.3</version>
-      <extensions>true</extensions>
-      <configuration>
-        <serverId>ossrh</serverId>
-        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-        <autoReleaseAfterClose>true</autoReleaseAfterClose>
-      </configuration>
-    </plugin>
+			<plugin>
+			  <groupId>org.sonatype.plugins</groupId>
+			  <artifactId>nexus-staging-maven-plugin</artifactId>
+			  <version>1.6.13</version>
+			  <extensions>true</extensions>
+			  <configuration>
+				<serverId>ossrh</serverId>
+				<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+				<autoReleaseAfterClose>true</autoReleaseAfterClose>
+			  </configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.5</version>
+				<version>3.2.1</version>
 				<executions>
 					<execution>
 						<id>sign-artifacts</id>
@@ -324,7 +324,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>2.2.1</version>
+				<version>3.3.0</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -337,7 +337,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
+				<version>3.6.3</version>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
@@ -350,9 +350,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.12.1</version>
 				<configuration>
 					<source>${version.java}</source>
 					<target>${version.java}</target>
+
 					<!-- IMPORTANT -->
 					<useIncrementalCompilation>false</useIncrementalCompilation>
 				</configuration>
@@ -360,7 +362,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.6</version>
+				<version>3.3.0</version>
 				<configuration>
 					<archive>
 						<index>true</index>

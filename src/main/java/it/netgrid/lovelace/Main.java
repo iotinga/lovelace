@@ -87,7 +87,8 @@ public class Main {
 			// Setup web app context
 			WebAppContext webAppContext = new WebAppContext();
 			webAppContext.setContextPath("/");
-			webAppContext.setResourceBase("src/main/webapp");
+			ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+			webAppContext.setResourceBase(classloader.getResource("webapp").toString());
 		    server.setHandler(webAppContext);
 
 
@@ -154,7 +155,7 @@ public class Main {
 					  protected void configureServlets() {
 
 						  Map<String, String> params = new HashMap<String, String>();
-						  params.put("jakarta.ws.rs.Application", "it.netgrid.lovelace.Application");
+						  params.put("jakarta.ws.rs.Application", Application.class.getCanonicalName());
 						  params.put("jersey.config.server.mvc.templateBasePath.freemarker", "layout");
 						  params.put("jersey.config.servlet.filter.contextPath", "/*");
 						  params.put("gzip", "true");
