@@ -8,7 +8,7 @@ import org.quartz.SchedulerException;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Created by timmattison on 8/4/14.

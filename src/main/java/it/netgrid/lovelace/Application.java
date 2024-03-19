@@ -1,7 +1,11 @@
 package it.netgrid.lovelace;
 
+import io.swagger.v3.jaxrs2.SwaggerSerializers;
+import io.swagger.v3.jaxrs2.integration.api.JaxrsOpenApiScanner;
+import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature;
 import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
 import org.slf4j.Logger;
@@ -15,15 +19,13 @@ public class Application extends ResourceConfig {
 
 	private static final String RESOURCES_PACKAGES = "it.netgrid.lovelace.rest";
 	
-	@Inject
-    public Application(ServiceLocator serviceLocator, GuiceConfig config) {
+    public Application() {
         // Set package to look for resources in
         packages(RESOURCES_PACKAGES);
-
-        log.debug("Registering injectables...");
-
-        GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);
-        GuiceIntoHK2Bridge guiceBridge = serviceLocator.getService(GuiceIntoHK2Bridge.class);
-        guiceBridge.bridgeGuiceInjector(config.getInjector());
+        register(GuiceFeature.class);
+        register(JaxrsOpenApiScanner.class);
+        register(SwaggerSerializers.class);
+        register(OpenApiResource.class);
+        register(FreemarkerMvcFeature.class);
     }
 }

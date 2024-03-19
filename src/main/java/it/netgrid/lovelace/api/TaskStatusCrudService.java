@@ -1,18 +1,14 @@
 package it.netgrid.lovelace.api;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
-import org.quartz.Job;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
+import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +16,6 @@ import static org.quartz.JobBuilder.*;
 import static org.quartz.TriggerBuilder.*;
 import static org.quartz.CronScheduleBuilder.*;
 
-import com.cronutils.validator.CronValidator;
 import com.google.inject.Inject;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
@@ -47,7 +42,6 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 	private final Configuration config;
 	private final Scheduler scheduler;
 	private final SchedulerUtils schedulerUtils;
-	private final CronValidator cronValidator;
 	private final Dao<TaskStatus, Long> taskStatusDao;
 	private final CrudService<SchedulerStatus, Long> schedulerStatusService;
 	private final CrudService<RunStatus, Long> runStatusService;
@@ -57,7 +51,6 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 			SchedulerUtils schedulerUtils,
 			Configuration config,
 			Scheduler scheduler, 
-			CronValidator cronValidator,
 			Dao<TaskStatus, Long> taskStatusDao,
 			CrudService<RunStatus, Long> runStatusService,
 			CrudService<SchedulerStatus, Long> schedulerStatusService) {
@@ -65,7 +58,6 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		this.config = config;
 		this.scheduler = scheduler;
 		this.schedulerUtils = schedulerUtils;
-		this.cronValidator = cronValidator;
 		this.taskStatusDao = taskStatusDao;
 		this.runStatusService = runStatusService;
 		this.schedulerStatusService = schedulerStatusService;
@@ -74,7 +66,13 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 	@Override
 	public int createRaw(TaskStatus task) throws SQLException, IllegalArgumentException {
 		Validate.notBlank(task.getName());
-		this.cronValidator.validate(task.getSchedule());
+
+		// validate
+		try {
+			CronExpression cron = new CronExpression(task.getSchedule());
+		} catch (ParseException pe) {
+			throw new IllegalArgumentException(pe);
+		}
 		
 		SchedulerStatus scheduler = this.schedulerStatusService.read(this.config.getSchedulerId());
 		task.setSchedulerStatus(scheduler);
@@ -130,7 +128,11 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 			throw new IllegalArgumentException(INVALID_CANONICAL_NAME);
 		}
 
-		this.cronValidator.validate(task.getSchedule());
+		try {
+			CronExpression cron = new CronExpression(task.getSchedule());
+		} catch (ParseException pe) {
+			throw new IllegalArgumentException(pe);
+		}
 		
 		int retval = 0;
 		

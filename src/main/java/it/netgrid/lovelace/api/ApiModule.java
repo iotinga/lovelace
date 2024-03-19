@@ -7,7 +7,6 @@ import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinition;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
-import com.cronutils.validator.CronValidator;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -30,12 +29,6 @@ public class ApiModule extends AbstractModule {
 		bind(new TypeLiteral<CrudService<StepStatus, Long>>() {}).to(StepStatusCrudService.class).in(Singleton.class);
 		bind(new TypeLiteral<BulkService<TaskStatus, Long>>() {}).to(TaskStatusBulkService.class).in(Singleton.class);
 		bind(StepService.class).to(StepServiceImpl.class).in(Singleton.class);
-	}
-
-	@Provides
-	@Singleton
-	public CronValidator getCronValidator(CronDefinition definition) {
-		return new CronValidator(definition);
 	}
 	
 	@Provides

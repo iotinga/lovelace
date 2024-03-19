@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>it.netgrid</groupId>
 	<artifactId>lovelace</artifactId>
-	<version>0.0.4</version>
+	<version>0.0.5</version>
 	<name>Lovelace</name>
 	<description>A task scheduler with REST interface written in Java</description>
 	<licenses>
@@ -16,38 +16,177 @@
     </licenses>
 	<properties>
 		<main.path>it.netgrid.lovelace.Main</main.path>
-		<slf4j.version>1.7.5</slf4j.version>
-		<java.version>1.8</java.version>
+		<version.slf4j>2.0.9</version.slf4j>
+		<version.java>21</version.java>
 		<commons.version>0.0.3</commons.version>
-		<jersey.version>2.22.2</jersey.version>
-		<guice.version>4.0</guice.version>
-		<ormlite.version>4.48</ormlite.version>
-		<junit.version>4.12</junit.version>
-		<jetty.version>9.3.8.v20160314</jetty.version>
-		<validator.version>1.5.1</validator.version>
-		<lang3.version>3.4</lang3.version>
-		<cron.version>3.1.6</cron.version>
-		<quartz.version>2.2.1</quartz.version>
-		<jersey2-guice.version>1.0.6</jersey2-guice.version>
+		<version.jersey>3.1.4</version.jersey>
+		<version.guice>7.0.0</version.guice>
+		<version.ormlite>6.1</version.ormlite>
+		<version.junit>5.9.2</version.junit>
+		<version.jetty>11.0.18</version.jetty>
+		<version.validator>1.8.0</version.validator>
+		<version.lang3>3.14.0</version.lang3>
+		<version.cron>9.2.1</version.cron>
+		<version.quartz>2.3.2</version.quartz>
+		<version.servlet>6.0.0</version.servlet>
+		<version.rest-api>3.1.0</version.rest-api>
+		<version.guice-bridge>3.0.5</version.guice-bridge>
+		<version.xml-bind>4.0.1</version.xml-bind>
+		<version.swagger>2.2.19</version.swagger>
+		<version.jackson>2.16.0</version.jackson>
+		<version.log4j2>2.22.0</version.log4j2>
+		<version.browscap-java>1.4.3</version.browscap-java>
+		<version.h2>2.2.224</version.h2>
+		<version.persistence-api>3.2.0-M1</version.persistence-api>
 	</properties>
 
 	<dependencies>
 		<dependency>
-		    <groupId>com.squarespace.jersey2-guice</groupId>
-		    <artifactId>0-jersey2-guice-spi</artifactId>
-		    <version>${jersey2-guice.version}</version>
+			<groupId>org.glassfish.hk2</groupId>
+			<artifactId>guice-bridge</artifactId>
+			<version>${version.guice-bridge}</version>
 		</dependency>
 		<dependency>
-		  <groupId>com.squarespace.jersey2-guice</groupId>
-		  <artifactId>jersey2-guice-impl</artifactId>
-		  <version>${jersey2-guice.version}</version>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>${version.servlet}</version>
+			<scope>provided</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.glassfish.hk2/guice-bridge -->
 		<dependency>
-		    <groupId>org.glassfish.hk2</groupId>
-		    <artifactId>guice-bridge</artifactId>
-		    <version>2.4.0</version>
+			<groupId>jakarta.ws.rs</groupId>
+			<artifactId>jakarta.ws.rs-api</artifactId>
+			<version>${version.rest-api}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.inject</groupId>
+			<artifactId>jersey-hk2</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>${version.xml-bind}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
+			<version>${version.jackson}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
+			<version>4.0.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
+			<version>${version.xml-bind}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-common</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.hk2</groupId>
+			<artifactId>hk2-metadata-generator</artifactId>
+			<version>3.0.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-mvc-freemarker</artifactId>
+			<version>${version.jersey}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-jaxrs2-jakarta</artifactId>
+			<version>${version.swagger}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations-jakarta</artifactId>
+			<version>${version.swagger}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-jaxrs2-servlet-initializer-jakarta</artifactId>
+			<version>${version.swagger}</version>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.ws.rs</groupId>
+			<artifactId>jakarta.ws.rs-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+
+		<!-- Api to get UserAgent and other information on browser -->
+		<dependency>
+			<groupId>com.blueconic</groupId>
+			<artifactId>browscap-java</artifactId>
+			<version>${version.browscap-java}</version>
+		</dependency>
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+			<version>${version.slf4j}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j2-impl</artifactId>
+			<version>${version.log4j2}</version>
+		</dependency>
+		<!-- DI -->
+		<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+			<version>${version.guice}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-persist</artifactId>
+			<version>${version.guice}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-servlet</artifactId>
+			<version>${version.guice}</version>
+		</dependency>
+
+		<!-- Test -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>${version.junit}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>${version.junit}</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>it.netgrid</groupId>
 			<artifactId>commons</artifactId>
@@ -62,121 +201,75 @@
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
-			<version>${quartz.version}</version>
+			<version>${version.quartz}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz-jobs</artifactId>
-			<version>${quartz.version}</version>
+			<version>${version.quartz}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
-			<version>${validator.version}</version>
+			<version>${version.validator}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>${lang3.version}</version>
+			<version>${version.lang3}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cronutils</groupId>
 			<artifactId>cron-utils</artifactId>
-			<version>${cron.version}</version>
+			<version>${version.cron}</version>
 		</dependency>
-		<!-- Jersey START -->
-		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-server</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-json-jackson -->
-		<dependency>
-		    <groupId>org.glassfish.jersey.media</groupId>
-		    <artifactId>jersey-media-json-jackson</artifactId>
-		    <version>${jersey.version}</version>
-		</dependency>
-		<!-- Jersey END -->
-		<dependency>
-			<groupId>com.google.inject</groupId>
-			<artifactId>guice</artifactId>
-			<version>${guice.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.inject.extensions/guice-multibindings -->
-		<dependency>
-		    <groupId>com.google.inject.extensions</groupId>
-		    <artifactId>guice-multibindings</artifactId>
-		    <version>${guice.version}</version>
-		</dependency>		
+
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-servlet</artifactId>
-			<version>${jetty.version}</version>
+			<version>${version.jetty}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-webapp</artifactId>
-			<version>${jetty.version}</version>
-		</dependency>
-
-		<!-- Logging API -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>${slf4j.version}</version>
+			<version>${version.jetty}</version>
 		</dependency>
 
 		<!-- Object persistency -->
 		<dependency>
-			<groupId>javax.persistence</groupId>
-			<artifactId>persistence-api</artifactId>
-			<version>1.0-rev-1</version>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+			<version>${version.persistence-api}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.j256.ormlite</groupId>
 			<artifactId>ormlite-core</artifactId>
-			<version>${ormlite.version}</version>
+			<version>${version.ormlite}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.j256.ormlite</groupId>
 			<artifactId>ormlite-jdbc</artifactId>
-			<version>${ormlite.version}</version>
+			<version>${version.ormlite}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>1.4.187</version>
+			<version>${version.h2}</version>
 		</dependency>
 
-		<!-- Testing dependencies: -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.codearte.jfairy</groupId>
-			<artifactId>jfairy</artifactId>
-			<version>0.5.3</version>
-			<scope>test</scope>
-		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.guiceberry/guiceberry -->
 		<dependency>
 			<groupId>com.google.guiceberry</groupId>
 			<artifactId>guiceberry</artifactId>
 			<version>3.3.1</version>
 			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.devskiller/jfairy -->
+		<dependency>
+			<groupId>com.devskiller</groupId>
+			<artifactId>jfairy</artifactId>
+			<version>0.6.5</version>
 		</dependency>
 
 	</dependencies>

@@ -11,7 +11,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
-import io.codearte.jfairy.Fairy;
+import com.devskiller.jfairy.Fairy;
 import it.netgrid.lovelace.api.ApiModule;
 import it.netgrid.lovelace.model.DaoModule;
 import it.netgrid.lovelace.model.JdbcConnectionModule;

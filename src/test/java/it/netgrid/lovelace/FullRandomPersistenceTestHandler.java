@@ -23,7 +23,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
-import io.codearte.jfairy.Fairy;
+import com.devskiller.jfairy.Fairy;
 import it.netgrid.commons.SerializableUtils;
 import it.netgrid.lovelace.model.StepStatus;
 import it.netgrid.lovelace.model.SchedulerStatus;

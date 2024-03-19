@@ -1,18 +1,20 @@
 package it.netgrid.lovelace.api;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.google.guiceberry.junit4.GuiceBerryRule;
 import com.google.inject.Inject;
 import com.j256.ormlite.dao.Dao;
 
-import io.codearte.jfairy.Fairy;
+import com.devskiller.jfairy.Fairy;
 import it.netgrid.lovelace.LovelaceTestEnv;
 import it.netgrid.lovelace.PersistenceTestHandler;
 import it.netgrid.lovelace.model.ExecutionResult;
@@ -83,7 +85,7 @@ public class RunStatusServiceImplTest {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
 		StepStatus currentStep = this.classUnderTest.start(task, "start", 1);
 		
-		ExecutionResult result = fairy.baseProducer().randomElement(ExecutionResult.values());
+		ExecutionResult result = ExecutionResult.valueOf(fairy.baseProducer().randomElement(Arrays.toString(ExecutionResult.values())));
 		String stepName = fairy.textProducer().latinSentence();
 		StepStatus nextStep = this.classUnderTest.nextStep(task, result, stepName);
 		
@@ -102,7 +104,7 @@ public class RunStatusServiceImplTest {
 		TaskStatus task = this.taskStatusDao.queryForId((long)1);
 		StepStatus currentStep = this.classUnderTest.start(task, "start", 1);
 		
-		ExecutionResult result = fairy.baseProducer().randomElement(ExecutionResult.values());
+		ExecutionResult result = ExecutionResult.valueOf(fairy.baseProducer().randomElement(Arrays.toString(ExecutionResult.values())));
 		String stepName = fairy.textProducer().latinSentence();
 		this.classUnderTest.nextStep(task, result, stepName);
 		
@@ -118,8 +120,8 @@ public class RunStatusServiceImplTest {
 		taskRunDao.refresh(task.getCurrentRun());
 		RunStatus currentRun = task.getCurrentRun();
 
-		ExecutionResult taskResult = fairy.baseProducer().randomElement(ExecutionResult.values());
-		ExecutionResult stepResult = fairy.baseProducer().randomElement(ExecutionResult.values());
+		ExecutionResult taskResult = ExecutionResult.valueOf(fairy.baseProducer().randomElement(Arrays.toString(ExecutionResult.values())));
+		ExecutionResult stepResult = ExecutionResult.valueOf(fairy.baseProducer().randomElement(Arrays.toString(ExecutionResult.values())));
 		StepStatus lastStep = this.classUnderTest.end(task, stepResult, taskResult);
 		
 		task = this.taskStatusDao.queryForId((long)1);

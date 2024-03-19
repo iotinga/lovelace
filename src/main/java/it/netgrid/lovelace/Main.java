@@ -4,15 +4,17 @@ import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.*;
 
-import javax.servlet.DispatcherType;
+import com.google.inject.servlet.GuiceServletContextListener;
+import jakarta.servlet.DispatcherType;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.glassfish.jersey.servlet.ServletContainer;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
@@ -26,8 +28,6 @@ import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
-import com.squarespace.jersey2.guice.JerseyGuiceModule;
-import com.squarespace.jersey2.guice.JerseyGuiceUtils;
 
 import it.netgrid.lovelace.api.ApiModule;
 import it.netgrid.lovelace.model.DaoModule;
@@ -71,69 +71,33 @@ public class Main {
 		try {
 			// Create scheduler
 			Main.scheduler = StdSchedulerFactory.getDefaultScheduler();
-			Main.injector = Main.createInjector();
-			Main.scheduler.setJobFactory(Main.injector.getInstance(GuiceJobFactory.class));
-			
+			Main.injector = Main.getInjector();
 			// Create the server
 			Main.server = new Server(new InetSocketAddress(Main.config.getBindAddress(), Main.config.getBindPort()));
-			JerseyGuiceUtils.install(injector);
-			
+			Main.scheduler.setJobFactory(Main.injector.getInstance(GuiceJobFactory.class));
+
+			GuiceServletContextListener guiceListener = new GuiceServletContextListener() {
+				private static Injector defaultInjector;
+
+				@Override
+				protected Injector getInjector() {
+					return getDefaultInjector();
+				}
+
+				public static Injector getDefaultInjector() {
+					return Main.injector;
+				}
+			};
 			// Setup web app context
 			WebAppContext webAppContext = new WebAppContext();
 			webAppContext.setContextPath("/");
-		    
-			// Initialize servlet
-		    /*
-		     *     <servlet>
-			 *	        <servlet-name>Lovelace</servlet-name>
-			 *	        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-			 *	        <init-param>
-			 *	            <param-name>javax.ws.rs.Application</param-name>
-			 *	            <param-value>it.netgrid.lovelace.Application</param-value>
-			 *	        </init-param>
-			 *	        <load-on-startup>1</load-on-startup>
-			 *	    </servlet>
-			 *	    <servlet-mapping>
-			 *	        <servlet-name>Lovelace</servlet-name>
-			 *	        <url-pattern>/*</url-pattern>
-			 *	    </servlet-mapping>
-		     */
-		    ServletHolder sh = webAppContext.addServlet(org.glassfish.jersey.servlet.ServletContainer.class,"/*");
-		    sh.setInitParameter("javax.ws.rs.Application", "it.netgrid.lovelace.Application");
-		    
-		    // Initialize filters
-		    /*
-		     * 
-		     *         <filter>
-			 *		        <filter-name>guice-filter</filter-name>
-			 *		        <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
-			 *		    </filter>
-		     * 
-		     */
-		    // addFilter returns FilterHolder object that can be used to specify initialitaion parameters of this filter
-		    webAppContext.addFilter(com.google.inject.servlet.GuiceFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
-		    
-		    // Setup listener
-		    /*
-		     *     <listener>
-			 *	        <listener-class>it.netgrid.lovelace.GuiceConfig</listener-class>
-			 *	    </listener>
-		     */
-		    webAppContext.addEventListener(Main.injector.getInstance(GuiceConfig.class));
-		    
-			/* Important: Use getResource */
-		    //String webxmlLocation = Main.class.getResource("/webapp/WEB-INF/web.xml").toString();
-		    //webAppContext.setDescriptor("WEB-INF/web.xml");
-
-		    /* Important: Use getResource */
-		    //String resLocation = Main.class.getResource("/webapp").toString();
-			//webAppContext.setResourceBase("src//webapp");
-		    //webAppContext.setParentLoaderPriority(true);
-		    // System temp directory as resource base. This package doesn't provide resources
-		    webAppContext.setResourceBase(System.getProperty("java.io.tmpdir"));
-		    
+			webAppContext.setResourceBase("src/main/webapp");
+//			webAppContext.setDisplayName("Lovelace");
+//			webAppContext.addEventListener(guiceListener);
+//			webAppContext.addFilter(com.google.inject.servlet.GuiceFilter.class,"/*", EnumSet.allOf(DispatcherType.class) );
 		    server.setHandler(webAppContext);
-	
+
+
 			// Start services
 			try {
 				Main.scheduler.start();
@@ -149,24 +113,13 @@ public class Main {
 		} catch (SchedulerException e) {
 			log.error("Cannot init scheduler", e);
 		}
-	}		
+    }
 	
 	protected static Scheduler getScheduler() {
 		return Main.scheduler;
 	}
 	
-	protected static Injector createInjector() {
-
-		  Main.modules.add(new JerseyGuiceModule("__HK2_Generated_0"));
-		  Main.modules.add(new ServletModule() {
-			 @Override
-			 protected void configureServlets() {
-				// This bindings must be after the "serve" call
-				bind(SQLExceptionMapper.class);
-				bind(IllegalArgumentExceptionMapper.class);
-				bind(NullPointerExceptionMapper.class);
-			 }
-		  });
+	protected static Injector getInjector() {
 		  
 		  if( ! Main.config.hasJdbcConnectionReuse()) {
 			  Main.modules.add(new JdbcConnectionModule());
@@ -202,7 +155,38 @@ public class Main {
 				return server;
 			}
 		  });
-		
-		return Guice.createInjector(Main.modules);
+		  Main.modules.add(
+				  new ServletModule() {
+					  @Override
+					  protected void configureServlets() {
+
+						  Map<String, String> params = new HashMap<String, String>();
+						  params.put("jakarta.ws.rs.Application", "it.netgrid.lovelace.Application");
+						  params.put("jersey.config.server.mvc.templateBasePath.freemarker", "layout");
+						  params.put("jersey.config.servlet.filter.contextPath", "/*");
+						  params.put("gzip", "true");
+						  params.put("useFileMappedBuffer","true");
+						  params.put("redirectWelcome","true");
+						  params.put("dirAllowed","true");
+
+						  bind(ServletContainer.class).in(Singleton.class);
+						  filter("/static/*").through(StaticFilter.class);
+						  serve("/rest/*").with(ServletContainer.class, params);
+
+						  // This bindings must be after the "serve" call
+						  bind(SQLExceptionMapper.class);
+						  bind(IllegalArgumentExceptionMapper.class);
+						  bind(NullPointerExceptionMapper.class);
+					  }
+				  }
+		  );
+		  return Guice.createInjector(
+				  Main.modules
+		  );
 	}
+
+	public static Injector getDefaultInjector(){
+		return Main.injector;
+	}
+
 }
