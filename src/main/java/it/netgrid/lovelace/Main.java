@@ -92,9 +92,6 @@ public class Main {
 			WebAppContext webAppContext = new WebAppContext();
 			webAppContext.setContextPath("/");
 			webAppContext.setResourceBase("src/main/webapp");
-//			webAppContext.setDisplayName("Lovelace");
-//			webAppContext.addEventListener(guiceListener);
-//			webAppContext.addFilter(com.google.inject.servlet.GuiceFilter.class,"/*", EnumSet.allOf(DispatcherType.class) );
 		    server.setHandler(webAppContext);
 
 

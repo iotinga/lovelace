@@ -90,7 +90,7 @@
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
-			<version>4.0.4</version>
+			<version>4.0.5</version>
 		</dependency>
 
 		<dependency>
@@ -345,8 +345,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
+					<source>${version.java}</source>
+					<target>${version.java}</target>
 					<!-- IMPORTANT -->
 					<useIncrementalCompilation>false</useIncrementalCompilation>
 				</configuration>
@@ -392,22 +392,22 @@
 		<url>git@bitbucket.org:netgrid/lovelace.git</url>
 		<developerConnection>@netgrid</developerConnection>
 	</scm>
-		<developers>
-    <developer>
-      <id>matteo_bissoli</id>
-      <name>Matteo Bissoli</name>
-      <email>matteo.bissoli@netgrid.it</email>
-      <url>http://www.netgrid.it/matteo</url>
-      <organization>Netgrid</organization>
-      <organizationUrl>http://www.netgrid.it</organizationUrl>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>Italy/Rome</timezone>
-      <properties>
-        <picUrl>http://www.netgrid.it/wp-content/uploads/2014/11/150624-091636-600x600.jpg</picUrl>
-      </properties>
-    </developer>
-  </developers>
+	<developers>
+		<developer>
+		  <id>matteo_bissoli</id>
+		  <name>Matteo Bissoli</name>
+		  <email>matteo.bissoli@netgrid.it</email>
+		  <url>http://www.netgrid.it/matteo</url>
+		  <organization>Netgrid</organization>
+		  <organizationUrl>http://www.netgrid.it</organizationUrl>
+		  <roles>
+			<role>architect</role>
+			<role>developer</role>
+		  </roles>
+		  <timezone>Italy/Rome</timezone>
+		  <properties>
+			<picUrl>http://www.netgrid.it/wp-content/uploads/2014/11/150624-091636-600x600.jpg</picUrl>
+		  </properties>
+		</developer>
+ 	</developers>
 </project>
