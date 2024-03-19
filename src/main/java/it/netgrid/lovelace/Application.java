@@ -14,10 +14,13 @@ import org.slf4j.LoggerFactory;
 import jakarta.inject.Inject;
 
 public class Application extends ResourceConfig {
-
 	private static final Logger log = LoggerFactory.getLogger(Application.class);
 
-	private static final String RESOURCES_PACKAGES = "it.netgrid.lovelace.rest";
+    private static final String PACKAGE_NAME = Application.class.getPackageName();
+	private static final String[] RESOURCES_PACKAGES = new String[] {
+            PACKAGE_NAME + ".rest"
+    };
+
 	
     public Application() {
         // Set package to look for resources in

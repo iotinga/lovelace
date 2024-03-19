@@ -1,23 +1,14 @@
 package it.netgrid.lovelace.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Transient;
+import javax.persistence.*;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlTransient;
-
-import com.j256.ormlite.dao.ForeignCollection;
-import com.j256.ormlite.field.ForeignCollectionField;
 
 import it.netgrid.commons.data.CrudObject;
 
@@ -58,9 +49,10 @@ public class RunStatus implements CrudObject<Long> {
 	@ManyToOne
 	@JoinColumn(name=TASK_STATUS_ID_FIELD_NAME)
 	private TaskStatus taskStatus;
-	
-	@ForeignCollectionField(orderColumnName=StepStatus.ID_FIELD_NAME)
-	private ForeignCollection<StepStatus> stepsStatus;
+
+	@OneToMany
+	@JoinColumn(referencedColumnName=StepStatus.ID_FIELD_NAME)
+	private Collection<StepStatus> stepsStatus;
 	
 	@OneToOne
 	@JoinColumn(name=CURRENT_STEP_ID_FIELD_NAME)
@@ -146,11 +138,11 @@ public class RunStatus implements CrudObject<Long> {
 	}
 
 	@XmlTransient
-	public ForeignCollection<StepStatus> getStepsStatus() {
+	public Collection<StepStatus> getStepsStatus() {
 		return stepsStatus;
 	}
 
-	public void setStepsStatus(ForeignCollection<StepStatus> stepsStatus) {
+	public void setStepsStatus(Collection<StepStatus> stepsStatus) {
 		this.stepsStatus = stepsStatus;
 	}
 

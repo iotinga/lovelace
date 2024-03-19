@@ -18,7 +18,7 @@
 		<main.path>it.netgrid.lovelace.Main</main.path>
 		<version.slf4j>2.0.9</version.slf4j>
 		<version.java>21</version.java>
-		<commons.version>0.0.3</commons.version>
+		<commons.version>0.0.4</commons.version>
 		<version.jersey>3.1.4</version.jersey>
 		<version.guice>7.0.0</version.guice>
 		<version.ormlite>6.1</version.ormlite>
@@ -103,6 +103,12 @@
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-common</artifactId>
 			<version>${version.jersey}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>javax.persistence-api</artifactId>
+			<version>2.2</version>
 		</dependency>
 
 		<dependency>

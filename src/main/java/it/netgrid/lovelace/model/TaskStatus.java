@@ -1,22 +1,14 @@
 package it.netgrid.lovelace.model;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Transient;
+import javax.persistence.*;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlTransient;
-
-import com.j256.ormlite.dao.ForeignCollection;
-import com.j256.ormlite.field.ForeignCollectionField;
 
 import it.netgrid.commons.SerializableUtils;
 import it.netgrid.commons.data.CrudObject;
@@ -78,9 +70,10 @@ public class TaskStatus implements CrudObject<Long> {
 	@OneToOne
 	@JoinColumn(name=SCHEDULER_STATUS_ID_FIELD_NAME)
 	private SchedulerStatus schedulerStatus;
-	
-	@ForeignCollectionField
-	private ForeignCollection<RunStatus> taskRuns;
+
+	@OneToMany
+	@JoinColumn
+	private Collection<RunStatus> taskRuns;
 	
 	@Transient
 	private Date nextRunTime;
@@ -207,11 +200,11 @@ public class TaskStatus implements CrudObject<Long> {
 	}
 
 	@XmlTransient
-	public ForeignCollection<RunStatus> getTaskRuns() {
+	public Collection<RunStatus> getTaskRuns() {
 		return taskRuns;
 	}
 
-	public void setTaskRuns(ForeignCollection<RunStatus> taskRuns) {
+	public void setTaskRuns(Collection<RunStatus> taskRuns) {
 		this.taskRuns = taskRuns;
 	}
 }

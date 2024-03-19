@@ -1,20 +1,14 @@
 package it.netgrid.lovelace.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
+import javax.persistence.*;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlTransient;
-
-import com.j256.ormlite.dao.ForeignCollection;
-import com.j256.ormlite.field.ForeignCollectionField;
 
 import it.netgrid.commons.data.CrudObject;
 
@@ -36,8 +30,9 @@ public class SchedulerStatus implements CrudObject<Long> {
 	@Transient
 	private List<TaskStatus> tasks;
 	
-	@ForeignCollectionField
-	private ForeignCollection<TaskStatus> tasksStatus;
+	@OneToMany
+	@JoinColumn
+	private Collection<TaskStatus> tasksStatus;
 	
 	public SchedulerStatus() {
 		this.tasks = new ArrayList<TaskStatus>();
@@ -69,11 +64,11 @@ public class SchedulerStatus implements CrudObject<Long> {
 	}
 
 	@XmlTransient
-	public ForeignCollection<TaskStatus> getTasksStatus() {
+	public Collection<TaskStatus> getTasksStatus() {
 		return tasksStatus;
 	}
 
-	public void setTasksStatus(ForeignCollection<TaskStatus> tasksStatus) {
+	public void setTasksStatus(Collection<TaskStatus> tasksStatus) {
 		this.tasksStatus = tasksStatus;
 	}
 	

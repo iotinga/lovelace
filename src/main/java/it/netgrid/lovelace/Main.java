@@ -4,15 +4,11 @@ import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.*;
 
 import com.google.inject.servlet.GuiceServletContextListener;
-import jakarta.servlet.DispatcherType;
 
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.quartz.Scheduler;
