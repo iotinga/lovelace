@@ -49,7 +49,7 @@ public class TaskStatus implements CrudObject<Long> {
 	@Transient
 	private Map<String, String> config;
 	
-	@Column(name=MARSHALLED_CONFIG_FIELD_NAME)
+	@Column(name=MARSHALLED_CONFIG_FIELD_NAME, columnDefinition="TEXT")
 	private String marshalledConfig;
 	
 	@Column(name=SCHEDULE_FIELD_NAME)

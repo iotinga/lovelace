@@ -197,7 +197,11 @@ public class TaskStatusCrudService extends TemplateCrudService<TaskStatus, Long>
 		
 		try {
 			Trigger trigger = this.scheduler.getTrigger(this.schedulerUtils.getTriggerKey(retval));
-			retval.setNextRunTime(trigger.getNextFireTime());
+			if (trigger != null) {
+				retval.setNextRunTime(trigger.getNextFireTime());
+			} else {
+				retval.setNextRunTime(null);
+			}
 		} catch (SchedulerException e) {
 			log.warn("Unable to read trigger reference for task: " + retval.getName());
 		}
